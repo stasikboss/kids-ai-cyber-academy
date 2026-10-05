@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from 'react';
+import { NOTICE_KEY } from '../components/DataControls.tsx';
 import { Dragon } from '../components/Dragon.tsx';
 import { LanguageSwitch } from '../components/parent-bits.tsx';
 import { useApp } from '../lib/app-state.tsx';
@@ -8,6 +9,15 @@ export function SignIn() {
   const { t } = useApp();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [deleted] = useState(() => {
+    try {
+      const notice = sessionStorage.getItem(NOTICE_KEY);
+      sessionStorage.removeItem(NOTICE_KEY);
+      return notice === 'family_deleted';
+    } catch {
+      return false;
+    }
+  });
 
   const redirectTo = `${window.location.origin}/`;
 
@@ -32,6 +42,7 @@ export function SignIn() {
         <Dragon size={72} title="SI" />
         <LanguageSwitch />
       </div>
+      {deleted && <p role="status" className="panel p-4">{t('data.deleted')}</p>}
       <h1 className="text-3xl">{t('signIn.title')}</h1>
       <p className="text-ink-soft">{t('signIn.lead')}</p>
 

@@ -1,0 +1,82 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "ai-05",
+  "version": 1,
+  "language": "en",
+  "title": "Asking AI good questions",
+  "intro": [
+    "AI answers better when the question is clear. A good question says what you want and how you want the answer.",
+    "Tips: say the topic, ask for simple words, ask for a set number of ideas, and ask a follow-up question if something isn't clear.",
+    "But never put private details in a question, like your name, address, school or passwords."
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "Is each question good, or does it need fixing?",
+    "bins": [
+      { "id": "good", "label": "Good question" },
+      { "id": "fix", "label": "Needs fixing" }
+    ],
+    "items": [
+      {
+        "id": "volcano_clear",
+        "text": "Explain in simple words for 9-year-olds how a volcano erupts",
+        "bin": "good",
+        "explain": "Clear topic, clear level. The AI knows exactly what to do."
+      },
+      {
+        "id": "volcano_vague",
+        "text": "Volcano",
+        "bin": "fix",
+        "explain": "'Volcano' isn't a question. What do you want to know about volcanoes?"
+      },
+      {
+        "id": "plant_ideas",
+        "text": "Give me 3 ideas for a science project about plants",
+        "bin": "good",
+        "explain": "It says the topic and how many ideas. Great!"
+      },
+      {
+        "id": "do_thing",
+        "text": "Do the thing",
+        "bin": "fix",
+        "explain": "The AI can't know which thing. Say what you need."
+      },
+      {
+        "id": "private_info",
+        "text": "I'm Dan from Oak School, help me with my homework",
+        "bin": "fix",
+        "explain": "Never share your name or school with AI. Ask just the homework question."
+      },
+      {
+        "id": "frog_toad",
+        "text": "What are 2 differences between a frog and a toad?",
+        "bin": "good",
+        "explain": "A clear, specific question that's easy to answer."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "best",
+      "question": "Which question is clearest?",
+      "options": ["Space", "Tell me 3 fun facts about the Moon", "Stuff about things"],
+      "answer": 1,
+      "explain": "It names the topic and how many facts you want."
+    },
+    {
+      "id": "private",
+      "question": "What do you leave out of a question to AI?",
+      "options": ["The topic", "The word 'please'", "Your name, address, school and passwords"],
+      "answer": 2,
+      "explain": "Private details never go into chats with AI."
+    },
+    {
+      "id": "not_clear",
+      "question": "The AI's answer is hard to understand. What can you do?",
+      "options": ["Ask it to explain in simpler words", "Give up", "Shout at the computer"],
+      "answer": 0,
+      "explain": "You can always ask a follow-up, like 'Explain it more simply'."
+    }
+  ],
+  "summary": "Good questions are clear: the topic, what you want and how simple. Ask follow-ups when you need to, and never include private details."
+}

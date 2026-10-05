@@ -1,0 +1,88 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "cyber-03",
+  "version": 1,
+  "language": "en",
+  "title": "Private vs. shareable info",
+  "intro": [
+    "Some information is fun to share online, like your favourite colour or a drawing you made.",
+    "Other information is private, because it helps strangers find you or get into your accounts: your address, school, phone number, passwords and photos that show where you are.",
+    "Before you send something, ask: does this help someone know who I am and where I am? If so, it's private. When you're not sure, ask a grown-up."
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "What's private, and what's OK to share in a game or chat?",
+    "bins": [
+      { "id": "share", "label": "OK to share" },
+      { "id": "private", "label": "Private" }
+    ],
+    "items": [
+      {
+        "id": "home_address",
+        "text": "Your home address",
+        "bin": "private",
+        "explain": "An address tells strangers exactly where you live."
+      },
+      {
+        "id": "fav_color",
+        "text": "Your favourite colour",
+        "bin": "share",
+        "explain": "A favourite colour doesn't help anyone find you. Fun to share!"
+      },
+      {
+        "id": "school_name",
+        "text": "The name of your school",
+        "bin": "private",
+        "explain": "Your school tells people where you are almost every day."
+      },
+      {
+        "id": "dragon_drawing",
+        "text": "A drawing of a dragon you made",
+        "bin": "share",
+        "explain": "A drawing is a great way to share without giving away details."
+      },
+      {
+        "id": "password",
+        "text": "Your game password",
+        "bin": "private",
+        "explain": "A password is never shared, except with your parents."
+      },
+      {
+        "id": "book_opinion",
+        "text": "What you thought of a book you read",
+        "bin": "share",
+        "explain": "Opinions and hobbies are fine to share. Just don't add details like your full name or address."
+      },
+      {
+        "id": "uniform_photo",
+        "text": "A photo of you wearing your school logo",
+        "bin": "private",
+        "explain": "Photos can give away where you are too. Check what shows in the background and on your clothes."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "which_private",
+      "question": "Which of these is private?",
+      "options": ["Your favourite animal", "Your phone number", "Your favourite game"],
+      "answer": 1,
+      "explain": "A phone number lets strangers contact you, so it stays private."
+    },
+    {
+      "id": "photo",
+      "question": "You want to send a photo. What do you check first?",
+      "options": ["That it shows no address, street sign or school logo", "That it's colourful enough", "That it has at least three people in it"],
+      "answer": 0,
+      "explain": "Little details in the background can show where you are."
+    },
+    {
+      "id": "unsure",
+      "question": "You're not sure if something is private. What do you do?",
+      "options": ["Send it anyway", "Guess", "Ask a parent or another adult you trust"],
+      "answer": 2,
+      "explain": "When you're not sure, stop and ask. Better to ask than be sorry."
+    }
+  ],
+  "summary": "Private information like your address, school, phone number and passwords stays with you. Hobbies, opinions and drawings are fine to share. When unsure, ask a grown-up."
+}

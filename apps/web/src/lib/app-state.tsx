@@ -3,6 +3,7 @@ import {
   createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 import { applyDocumentLanguage, type MessageKey, translate } from './i18n.ts';
+import { useScreenTime } from './screen-time.ts';
 import { supabase } from './supabase.ts';
 import type { Child, Family, Lang, Plan, PlanLimits } from './types.ts';
 
@@ -16,6 +17,8 @@ interface AppState {
   hasCoreConsent: boolean;
   hasTutorConsent: boolean;
   activeChild: Child | null;
+  /** Today's screen time is used up for the active child (child mode only). */
+  timeUp: boolean;
   lang: Lang;
   setParentLang: (lang: Lang) => void;
   enterChildMode: (childId: string) => void;
@@ -123,6 +126,8 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
 
   const activeChild = kids.find((c) => c.id === activeChildId) ?? null;
   const lang: Lang = activeChild?.language ?? parentLang;
+  // Lives here, above the routes, so moving between child pages never resets it.
+  const { timeUp } = useScreenTime(activeChild?.id ?? null);
 
   useEffect(() => applyDocumentLanguage(lang), [lang]);
 
@@ -136,6 +141,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
     hasCoreConsent: consents.includes('core'),
     hasTutorConsent: consents.includes('tutor'),
     activeChild,
+    timeUp,
     lang,
     setParentLang: (next) => {
       setParentLangState(next);
@@ -151,7 +157,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
     },
     refresh: () => load(session),
     t: (key, vars) => translate(lang, key, vars),
-  }), [ready, session, family, kids, plan, limits, consents, activeChild, lang, load]);
+  }), [ready, session, family, kids, plan, limits, consents, activeChild, timeUp, lang, load]);
 
   return <AppContext.Provider value={value}>{content}</AppContext.Provider>;
 }

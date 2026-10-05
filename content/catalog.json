@@ -35,8 +35,8 @@
     { "id": "cyber-05", "track": "cyber_safety", "position": 5, "title": { "he": "הרשאות של אפליקציות", "en": "App permissions" } },
     { "id": "cyber-06", "track": "cyber_safety", "position": 6, "title": { "he": "מספרים למבוגר שסומכים עליו", "en": "Tell a trusted adult" } },
 
-    { "id": "aisec-01", "track": "ai_security", "position": 1, "title": { "he": "איך מנסים לעבוד על צ'אטבוט", "en": "Tricking a chatbot" } },
+    { "id": "aisec-01", "track": "ai_security", "position": 1, "title": { "he": "איך מנסים לעבוד על צ׳אטבוט", "en": "Tricking a chatbot" } },
     { "id": "aisec-02", "track": "ai_security", "position": 2, "title": { "he": "הונאות עם קול משוכפל ומילת קוד משפחתית", "en": "Voice-clone scams and a family code word" } },
-    { "id": "aisec-03", "track": "ai_security", "position": 3, "title": { "he": "לא מדביקים מידע פרטי בצ'אטבוט", "en": "Never paste private info into a chatbot" } }
+    { "id": "aisec-03", "track": "ai_security", "position": 3, "title": { "he": "לא מדביקים מידע פרטי בצ׳אטבוט", "en": "Never paste private info into a chatbot" } }
   ]
 }

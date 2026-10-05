@@ -22,6 +22,7 @@ export type FixedReply =
   | 'off_topic'
   | 'output_replaced'
   | 'quota_reached'
+  | 'time_up'
   | 'tutor_disabled'
   | 'consent_required'
   | 'child_inactive'
@@ -62,6 +63,10 @@ const FIXED_REPLIES: Record<FixedReply, Record<Lang, string>> = {
   quota_reached: {
     he: 'סיימנו את ההודעות של היום. נמשיך מחר! בינתיים אפשר לשחק בשיעורים.',
     en: "That's all the messages for today. Let's continue tomorrow! You can still play the lessons.",
+  },
+  time_up: {
+    he: 'נגמר הזמן של היום. נתראה מחר!',
+    en: "That's all the time for today. See you tomorrow!",
   },
   tutor_disabled: {
     he: 'העוזר כבוי כרגע. אפשר לבקש מההורה להדליק אותו בהגדרות.',

@@ -1,0 +1,82 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "ai-04",
+  "version": 1,
+  "language": "en",
+  "title": "Real or AI-made?",
+  "intro": [
+    "AI can make pictures, videos and voices that look and sound real. Some of them are called deepfakes.",
+    "Sometimes there are clues, like strange hands, blurry writing or shadows that don't match. But new AI makes fewer mistakes, so clues aren't enough.",
+    "The best check is the source: who posted it first, and do trusted news sites or adults say the same thing?"
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "Is each one a good way to check whether something is real?",
+    "bins": [
+      { "id": "good", "label": "Good way to check" },
+      { "id": "not_good", "label": "Not a good way to check" }
+    ],
+    "items": [
+      {
+        "id": "who_posted",
+        "text": "Find out who posted it first",
+        "bin": "good",
+        "explain": "Knowing the source helps a lot. A real news site is more reliable than an unknown account."
+      },
+      {
+        "id": "news_sites",
+        "text": "See whether trusted news sites report the same thing",
+        "bin": "good",
+        "explain": "If something big really happened, trusted news will report it too."
+      },
+      {
+        "id": "ask_adult",
+        "text": "Ask a grown-up you trust",
+        "bin": "good",
+        "explain": "A grown-up can help you look into it and decide."
+      },
+      {
+        "id": "many_likes",
+        "text": "It has lots of likes, so it must be real",
+        "bin": "not_good",
+        "explain": "Fake things get lots of likes too. Likes don't show what's true."
+      },
+      {
+        "id": "looks_real",
+        "text": "It looks very realistic, so it must be real",
+        "bin": "not_good",
+        "explain": "AI can make things look completely real. Looking real is not proof."
+      },
+      {
+        "id": "friend_shared",
+        "text": "A friend shared it, so it must be real",
+        "bin": "not_good",
+        "explain": "Friends can be fooled too. Check where it came from."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "deepfake",
+      "question": "What is a deepfake?",
+      "options": ["A video, picture or voice made by AI to seem real", "A very deep swimming pool", "A type of computer virus"],
+      "answer": 0,
+      "explain": "A deepfake is fake media made with AI so that it seems real."
+    },
+    {
+      "id": "best_check",
+      "question": "What's the best way to check a surprising video?",
+      "options": ["Count the likes", "Check who posted it and whether trusted sources agree", "Watch it again"],
+      "answer": 1,
+      "explain": "The source and other trusted sources tell you much more than likes."
+    },
+    {
+      "id": "voice",
+      "question": "You hear a voice message that sounds like a famous singer asking for money. What do you think?",
+      "options": ["It must be real because it sounds the same", "I send the money quickly", "It could be AI-made, so I don't trust it and ask an adult"],
+      "answer": 2,
+      "explain": "AI can copy voices. Never send money because of a voice, and ask an adult."
+    }
+  ],
+  "summary": "AI can make fake pictures, videos and voices that seem real. Don't trust looks or likes; check the source and ask a grown-up you trust."
+}

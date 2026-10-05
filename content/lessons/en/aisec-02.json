@@ -1,0 +1,83 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "aisec-02",
+  "version": 1,
+  "language": "en",
+  "title": "Voice-clone scams and a family code word",
+  "intro": [
+    "AI can copy a real person's voice from a few seconds of recording. Scammers use this to sound like someone in your family.",
+    "The signs: an urgent call or voice message, a request for money, a code or details, and being asked not to tell anyone.",
+    "The fix: a family code word that only your family knows. If the voice doesn't know it, hang up and call your parent on their usual number."
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "Sort each call or message: normal or suspicious?",
+    "practiceNotice": "These are practice situations we made up for this game. They are not real.",
+    "bins": [
+      { "id": "normal", "label": "Normal" },
+      { "id": "suspicious", "label": "Suspicious" }
+    ],
+    "items": [
+      {
+        "id": "crying_cousin",
+        "text": "A call in your cousin's voice, crying and asking you to quickly send the code that came to Mom's phone",
+        "bin": "suspicious",
+        "explain": "Crying, rushing and asking for a code are scam signs. Hang up and tell a parent."
+      },
+      {
+        "id": "grandma_code",
+        "text": "Grandma calls, says the family code word and asks how you are",
+        "bin": "normal",
+        "explain": "She knows the code word and doesn't ask for anything strange. A normal call."
+      },
+      {
+        "id": "singer_video",
+        "text": "A video of a famous singer promising money to anyone who sends their parents' credit card details",
+        "bin": "suspicious",
+        "explain": "Famous voices and faces are easy to fake. Real celebrities don't ask for card details."
+      },
+      {
+        "id": "dad_text",
+        "text": "Dad texts from his usual number: \"I'll be ten minutes late\"",
+        "bin": "normal",
+        "explain": "A normal message from his usual number, with no strange requests."
+      },
+      {
+        "id": "dont_tell_mom",
+        "text": "A voice message that sounds like your big brother: \"I'm in trouble, send money and don't tell Mom\"",
+        "bin": "suspicious",
+        "explain": "\"Don't tell\" together with a request for money is a warning sign. Check with a parent."
+      },
+      {
+        "id": "teacher_message",
+        "text": "Your teacher posts a reminder in the class group to bring a hat tomorrow",
+        "bin": "normal",
+        "explain": "A normal reminder in a group you know, with no pressure and no requests for details."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "code_word",
+      "question": "What is a family code word?",
+      "options": ["A secret word only your family knows, to check who's really talking", "The Wi-Fi password", "The name of a game"],
+      "answer": 0,
+      "explain": "The code word helps you find out if the voice really belongs to who it claims to be."
+    },
+    {
+      "id": "urgent_call",
+      "question": "A voice that sounds like your parent urgently asks for money and doesn't know the code word. What do you do?",
+      "options": ["Send it fast, it's urgent", "Hang up and call your parent on their usual number", "Keep talking to find out more"],
+      "answer": 1,
+      "explain": "Call the number you know yourself. That's how you quickly find out if it's really your parent."
+    },
+    {
+      "id": "can_ai",
+      "question": "Can AI copy the voice of someone you know?",
+      "options": ["No, that's impossible", "Only robot voices", "Yes, sometimes from a few seconds of recording"],
+      "answer": 2,
+      "explain": "So a familiar voice alone isn't proof. The code word is the check."
+    }
+  ],
+  "summary": "AI can copy voices. When an urgent call asks for money, a code or a secret, check your family code word, and if something's off, hang up and call your parent on their usual number."
+}

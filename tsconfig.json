@@ -19,6 +19,7 @@
     "supabase/tests/**/*.ts",
     "tests/**/*.ts",
     "scripts/**/*.ts",
-    "evals/**/*.ts"
+    "evals/**/*.ts",
+    "content/source/**/*.ts"
   ]
 }

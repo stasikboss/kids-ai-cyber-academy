@@ -1,0 +1,89 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "cyber-04",
+  "version": 1,
+  "language": "en",
+  "title": "\"Free coins\" scams in games",
+  "intro": [
+    "Lots of games sell coins, gems or skins. Scammers know everyone wants them for free.",
+    "They promise free coins, and in return they ask for a password, a code sent by text, an app download or a gift card code.",
+    "The rule: real coins only come from inside the game itself or its official store, and never in exchange for a password."
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "Sort each offer: safe or a scam?",
+    "practiceNotice": "These are practice offers we made up for this game. They are not real.",
+    "bins": [
+      { "id": "safe", "label": "Safe" },
+      { "id": "scam", "label": "Scam" }
+    ],
+    "items": [
+      {
+        "id": "login_site",
+        "text": "A website promises 10,000 coins if you log in with your game username and password",
+        "bin": "scam",
+        "explain": "A random site asking for your password wants to steal your account."
+      },
+      {
+        "id": "level_reward",
+        "text": "The game itself gives you 50 coins for finishing a level",
+        "bin": "safe",
+        "explain": "Rewards inside the game, for something you did, are the normal way to get coins."
+      },
+      {
+        "id": "double_coins",
+        "text": "A player in chat: give me your coins and I'll give you back double",
+        "bin": "scam",
+        "explain": "\"Give me yours and I'll double them\" is an old trick. The coins never come back."
+      },
+      {
+        "id": "official_store",
+        "text": "Your parents buy coins in the game's official store",
+        "bin": "safe",
+        "explain": "Buying with your parents in the official store is the safe way."
+      },
+      {
+        "id": "generator_app",
+        "text": "A video tells you to download a \"coin generator\" app",
+        "bin": "scam",
+        "explain": "Coin generators don't exist. Apps like that can be a virus or steal your account."
+      },
+      {
+        "id": "event_prize",
+        "text": "An event inside the game gives a prize to everyone who takes part",
+        "bin": "safe",
+        "explain": "Events inside the game itself are safe, and you don't have to give any details."
+      },
+      {
+        "id": "gift_card",
+        "text": "A message: send the code from a gift card and get ten times the coins",
+        "bin": "scam",
+        "explain": "Anyone asking for a gift card code wants the money. No official game asks for that."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "too_good",
+      "question": "An offer sounds too good to be true. What does that usually mean?",
+      "options": ["It's probably a scam", "It's your lucky day", "You should hurry before it runs out"],
+      "answer": 0,
+      "explain": "When something sounds too good, that's the sign to stop and check with a grown-up."
+    },
+    {
+      "id": "password_for_coins",
+      "question": "Someone asks for your password so they can add coins. What do you do?",
+      "options": ["Give it, it's for coins", "Don't give it, and tell a parent", "Give only half of it"],
+      "answer": 1,
+      "explain": "Nobody needs your password to give you coins. Whoever asks for it wants to steal."
+    },
+    {
+      "id": "real_coins",
+      "question": "Where do real coins come from?",
+      "options": ["Sites that ask you to log in", "Players in chat", "The game itself or its official store"],
+      "answer": 2,
+      "explain": "Only the game itself and its official store give real coins."
+    }
+  ],
+  "summary": "Free coins in exchange for a password, a code or a download are a scam. Real coins only come from the game or its official store, and you tell a parent about any strange offer."
+}

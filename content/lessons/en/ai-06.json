@@ -1,0 +1,82 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "ai-06",
+  "version": 1,
+  "language": "en",
+  "title": "AI is a tool, not a friend or a grown-up",
+  "intro": [
+    "AI can chat in a friendly way, but it's a computer program. It has no feelings, and it doesn't care about you the way people do.",
+    "Some apps make AI seem like a best friend. That can feel nice, but real friends and family are the ones who really know you.",
+    "AI is great for explaining, practising and ideas. For feelings, worries and big decisions, talk to a real person you trust."
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "Who is the right helper for each situation?",
+    "bins": [
+      { "id": "ai", "label": "A good job for AI" },
+      { "id": "person", "label": "Talk to a real person" }
+    ],
+    "items": [
+      {
+        "id": "math_step",
+        "text": "Explaining a step in a maths exercise",
+        "bin": "ai",
+        "explain": "AI can explain things patiently, again and again."
+      },
+      {
+        "id": "sad_fight",
+        "text": "Feeling sad after a fight with a friend",
+        "bin": "person",
+        "explain": "Feelings deserve a real person who cares, like a parent or a friend."
+      },
+      {
+        "id": "card_ideas",
+        "text": "Ideas for a birthday card",
+        "bin": "ai",
+        "explain": "Brainstorming ideas is a great job for AI."
+      },
+      {
+        "id": "scared_online",
+        "text": "Someone online is scaring you",
+        "bin": "person",
+        "explain": "Tell a trusted adult right away. They can really help and protect you."
+      },
+      {
+        "id": "translate_word",
+        "text": "Translating a word into Hebrew",
+        "bin": "ai",
+        "explain": "Translating a word is a quick job AI does well."
+      },
+      {
+        "id": "stranger_request",
+        "text": "Someone you don't know asks you online to do something",
+        "bin": "person",
+        "explain": "Requests from strangers go to a trusted adult, never to AI alone."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "feelings",
+      "question": "Does AI have feelings?",
+      "options": ["Yes, just like people", "No, it's a computer program", "Only at weekends"],
+      "answer": 1,
+      "explain": "AI can write words about feelings, but it doesn't feel anything."
+    },
+    {
+      "id": "worried",
+      "question": "Something is worrying you. Who is best to talk to?",
+      "options": ["A parent or another adult you trust", "Only a chatbot", "Nobody"],
+      "answer": 0,
+      "explain": "People who know you and care about you can really help."
+    },
+    {
+      "id": "best_friend",
+      "question": "An app says its AI is your best friend. What's true?",
+      "options": ["It really loves you", "It remembers you forever like a friend", "It's a program, and real friends are people"],
+      "answer": 2,
+      "explain": "AI can be useful, but friendship is between people."
+    }
+  ],
+  "summary": "AI is a useful tool for explaining and ideas. It has no feelings, so for worries, feelings and big decisions, talk to a real person you trust."
+}

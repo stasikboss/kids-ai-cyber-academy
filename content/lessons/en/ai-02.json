@@ -1,0 +1,82 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "ai-02",
+  "version": 1,
+  "language": "en",
+  "title": "How AI learns from examples",
+  "intro": [
+    "AI learns like a detective collecting lots of clues. People show it many examples, and each one has a label, like a photo marked 'apple'.",
+    "From thousands of examples it finds patterns: apples are usually round, red or green, with a little stem.",
+    "Good examples teach it well. Wrong or confusing examples teach it mistakes. So the examples matter a lot!"
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "Help a robot learn what an apple looks like. Does each example help it or confuse it?",
+    "bins": [
+      { "id": "helps", "label": "Helps it learn" },
+      { "id": "confuses", "label": "Confuses it" }
+    ],
+    "items": [
+      {
+        "id": "red_apple",
+        "text": "A clear photo of a red apple, labelled 'apple'",
+        "bin": "helps",
+        "explain": "A clear photo with the right label is a great example."
+      },
+      {
+        "id": "tomato",
+        "text": "A photo of a tomato, labelled 'apple'",
+        "bin": "confuses",
+        "explain": "The label is wrong, so the robot learns that tomatoes are apples."
+      },
+      {
+        "id": "green_apple",
+        "text": "A photo of a green apple, labelled 'apple'",
+        "bin": "helps",
+        "explain": "Apples come in different colours. Variety helps the robot recognise all of them."
+      },
+      {
+        "id": "dark_photo",
+        "text": "A very dark, blurry photo, labelled 'apple'",
+        "bin": "confuses",
+        "explain": "If you can't see the apple, the robot can't learn from the photo either."
+      },
+      {
+        "id": "banana",
+        "text": "A photo of a banana, labelled 'apple'",
+        "bin": "confuses",
+        "explain": "Another wrong label. The robot might start calling bananas apples."
+      },
+      {
+        "id": "bitten_apple",
+        "text": "A photo of a half-eaten apple, labelled 'apple'",
+        "bin": "helps",
+        "explain": "Apples don't always look perfect. Real-life examples help the robot."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "labels",
+      "question": "What is a label in AI training?",
+      "options": ["A name that tells the AI what's in an example", "A sticker on the computer", "The AI's favourite colour"],
+      "answer": 0,
+      "explain": "A label tells the AI what each example shows, like 'apple' or 'cat'."
+    },
+    {
+      "id": "wrong_labels",
+      "question": "What happens if many examples have wrong labels?",
+      "options": ["The AI fixes them by itself", "The AI learns the mistakes", "Nothing changes"],
+      "answer": 1,
+      "explain": "AI learns from what it's shown, including the mistakes."
+    },
+    {
+      "id": "variety",
+      "question": "Why show the AI apples of many colours and shapes?",
+      "options": ["To make it hungry", "It doesn't matter", "So it recognises all kinds of apples"],
+      "answer": 2,
+      "explain": "The more varied the examples, the more kinds of apples it can recognise."
+    }
+  ],
+  "summary": "AI learns patterns from lots of labelled examples. Clear, correct and varied examples teach it well; wrong ones teach it mistakes."
+}

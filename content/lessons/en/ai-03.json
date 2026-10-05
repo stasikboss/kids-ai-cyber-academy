@@ -1,0 +1,82 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "ai-03",
+  "version": 1,
+  "language": "en",
+  "title": "AI can be wrong",
+  "intro": [
+    "AI can sound very sure of itself and still be wrong. Sometimes it even makes up facts that sound real.",
+    "That happens because it guesses the most likely words, not because it checked the facts.",
+    "So when something matters, like health, safety or a school test, check with a trusted adult or a reliable source."
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "What do you do with each AI answer?",
+    "bins": [
+      { "id": "fine", "label": "Fine for fun" },
+      { "id": "check", "label": "Check it first" }
+    ],
+    "items": [
+      {
+        "id": "mushroom",
+        "text": "AI says a mushroom you found in the park is safe to eat",
+        "bin": "check",
+        "explain": "Never eat a mushroom just because AI said so. Wild mushrooms can be dangerous, so ask an adult."
+      },
+      {
+        "id": "drawing_name",
+        "text": "AI suggests a funny name for your drawing",
+        "bin": "fine",
+        "explain": "A name for a drawing can't hurt anyone. Have fun!"
+      },
+      {
+        "id": "history_date",
+        "text": "AI gives you the date of a famous event for a test",
+        "bin": "check",
+        "explain": "AI can mix up dates. Check in your schoolbook or with your teacher."
+      },
+      {
+        "id": "medicine",
+        "text": "AI says how much medicine to take for a headache",
+        "bin": "check",
+        "explain": "Only a parent or a doctor decides about medicine."
+      },
+      {
+        "id": "cat_poem",
+        "text": "AI writes a silly poem about your cat",
+        "bin": "fine",
+        "explain": "A silly poem is just for fun, so mistakes don't matter."
+      },
+      {
+        "id": "safe_site",
+        "text": "AI says a website is safe for typing your password",
+        "bin": "check",
+        "explain": "AI can be wrong about safety. Ask a parent before typing a password anywhere."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "confident",
+      "question": "AI sounds very sure about an answer. Does that mean it's right?",
+      "options": ["Yes, always", "Not necessarily, it can still be wrong", "Only if it uses long words"],
+      "answer": 1,
+      "explain": "AI can sound sure and still be wrong."
+    },
+    {
+      "id": "made_up",
+      "question": "Why does AI sometimes make up facts?",
+      "options": ["It guesses likely words instead of checking facts", "It wants to trick you", "It's tired"],
+      "answer": 0,
+      "explain": "AI predicts words that sound right. It doesn't always check whether they're true."
+    },
+    {
+      "id": "health",
+      "question": "AI gives you advice about your health. What do you do?",
+      "options": ["Do what it says right away", "Don't ask any adult", "Ask a parent or a doctor"],
+      "answer": 2,
+      "explain": "Health questions go to a parent or a doctor, not to AI alone."
+    }
+  ],
+  "summary": "AI can sound sure and still be wrong. For fun things that's fine; for health, safety or school facts, check with a trusted adult or a reliable source."
+}

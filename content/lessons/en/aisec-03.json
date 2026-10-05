@@ -1,0 +1,82 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "aisec-03",
+  "version": 1,
+  "language": "en",
+  "title": "Never paste private info into a chatbot",
+  "intro": [
+    "Chatbots help with homework, ideas and explanations. But what you type or paste into them can be saved and read later.",
+    "So never put passwords, your address, phone number, photos of documents or other people's secrets into a chatbot.",
+    "A simple rule: if you wouldn't write it on the board at school, don't write it in a chatbot."
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "What's OK to type into a chatbot, and what never is?",
+    "bins": [
+      { "id": "ok", "label": "OK to type" },
+      { "id": "never", "label": "Never" }
+    ],
+    "items": [
+      {
+        "id": "homework_question",
+        "text": "A question about fractions from your homework",
+        "bin": "ok",
+        "explain": "A learning question with no personal details is exactly what chatbots are good for."
+      },
+      {
+        "id": "password_check",
+        "text": "Your password, to check if it's strong",
+        "bin": "never",
+        "explain": "A password only goes where it belongs. You can ask about the rules without typing it."
+      },
+      {
+        "id": "own_story",
+        "text": "A made-up story you wrote about a dragon, to get ideas",
+        "bin": "ok",
+        "explain": "A made-up story with no real details is fine to share."
+      },
+      {
+        "id": "passport_photo",
+        "text": "A photo of your parents' passport or ID card",
+        "bin": "never",
+        "explain": "Personal documents are some of the most sensitive information there is. Never paste them into a chatbot."
+      },
+      {
+        "id": "spelling_words",
+        "text": "A list of spelling words to practise",
+        "bin": "ok",
+        "explain": "Practice words aren't personal information. Good luck!"
+      },
+      {
+        "id": "friend_secret",
+        "text": "A secret a friend told you",
+        "bin": "never",
+        "explain": "Other people's secrets aren't ours to share, not even with a chatbot."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "saved",
+      "question": "What can happen to what you type into a chatbot?",
+      "options": ["It can be saved and read later", "It vanishes forever once you send it", "Nobody can ever see it"],
+      "answer": 0,
+      "explain": "Messages can be saved, so private information stays out of chatbots."
+    },
+    {
+      "id": "strong_check",
+      "question": "You want to know if your password is strong. What do you do?",
+      "options": ["Paste it into a chatbot", "Ask what makes a password strong, without typing it", "Send it to a friend to check"],
+      "answer": 1,
+      "explain": "You can learn what makes a password strong without showing it to anyone."
+    },
+    {
+      "id": "document",
+      "question": "You need help with a form that has personal details on it. What do you do?",
+      "options": ["Take a photo and paste it into a chatbot", "Guess", "Ask a parent for help"],
+      "answer": 2,
+      "explain": "Forms with personal details get filled in with a parent, not a chatbot."
+    }
+  ],
+  "summary": "A chatbot is a good tool for questions and ideas, but what you type can be saved. Never type passwords, addresses, documents or other people's secrets into one."
+}

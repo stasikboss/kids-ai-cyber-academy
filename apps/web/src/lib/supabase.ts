@@ -26,11 +26,15 @@ export type RpcErrorCode =
   | 'child_inactive'
   | 'lesson_not_available'
   | 'invalid_argument'
+  | 'owner_only'
+  | 'cancel_subscription_first'
+  | 'time_up'
   | 'unknown';
 
 const KNOWN: RpcErrorCode[] = [
   'not_a_guardian', 'not_found', 'step_up_required', 'consent_required', 'plan_child_limit',
-  'child_inactive', 'lesson_not_available', 'invalid_argument',
+  'child_inactive', 'lesson_not_available', 'invalid_argument', 'owner_only',
+  'cancel_subscription_first', 'time_up',
 ];
 
 export class RpcError extends Error {

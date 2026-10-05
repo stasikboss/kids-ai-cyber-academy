@@ -1,10 +1,12 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { DeleteChildControl, FamilyDataSection } from '../components/DataControls.tsx';
 import { Avatar } from '../components/kid-bits.tsx';
 import { Choice, LanguageSwitch } from '../components/parent-bits.tsx';
 import { useApp } from '../lib/app-state.tsx';
 import { catalogLessons } from '../lib/content.ts';
 import { alertKey } from '../lib/i18n.ts';
+import { israelToday } from '../lib/screen-time.ts';
 import { useStepUp } from '../lib/step-up.tsx';
 import { rpc, supabase } from '../lib/supabase.ts';
 import type { Child, Lang, Progress, SafetyEvent, TutorMessage } from '../lib/types.ts';
@@ -115,6 +117,8 @@ export function ParentHome() {
       {children.map((child) => (
         <ChildPanel key={child.id} child={child} progress={progress.filter((p) => p.child_id === child.id)} />
       ))}
+
+      <FamilyDataSection />
     </main>
   );
 }
@@ -122,12 +126,15 @@ export function ParentHome() {
 function ChildPanel({ child, progress }: { child: Child; progress: Progress[] }) {
   const { t } = useApp();
   const [quota, setQuota] = useState<{ used: number; limit: number } | null>(null);
+  const [minutesToday, setMinutesToday] = useState(0);
   const [showTranscript, setShowTranscript] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const done = progress.filter((p) => p.status === 'completed').length;
 
   useEffect(() => {
     rpc<{ used: number; limit: number }>('tutor_quota', { p_child: child.id }).then(setQuota).catch(() => setQuota(null));
+    supabase.from('child_activity').select('seconds').eq('child_id', child.id).eq('day', israelToday()).maybeSingle()
+      .then(({ data }) => setMinutesToday(Math.floor(((data?.seconds as number | undefined) ?? 0) / 60)));
   }, [child.id, progress.length]);
 
   return (
@@ -138,6 +145,7 @@ function ChildPanel({ child, progress }: { child: Child; progress: Progress[] })
           <h2 className="text-xl">{child.nickname}</h2>
           <p className="text-sm text-ink-soft">{t('parent.lessonsDone', { done, total: catalogLessons.length })}</p>
           {quota && <p className="text-sm text-ink-soft">{t('parent.tutorToday', quota)}</p>}
+          <p className="text-sm text-ink-soft">{t('parent.timeToday', { used: minutesToday, limit: child.daily_minutes })}</p>
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -149,7 +157,12 @@ function ChildPanel({ child, progress }: { child: Child; progress: Progress[] })
         </button>
       </div>
       {showTranscript && <Transcript childId={child.id} />}
-      {showSettings && <ChildSettings child={child} />}
+      {showSettings && (
+        <div className="space-y-4">
+          <ChildSettings child={child} />
+          <DeleteChildControl child={child} />
+        </div>
+      )}
     </section>
   );
 }

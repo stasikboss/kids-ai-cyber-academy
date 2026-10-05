@@ -4,7 +4,7 @@ import { Dragon, DragonSays } from '../../components/Dragon.tsx';
 import { useApp } from '../../lib/app-state.tsx';
 import { catalogLessons, type LessonBody, lessonBody, lessonState } from '../../lib/content.ts';
 import { badgeLabel } from '../../lib/i18n.ts';
-import { rpc } from '../../lib/supabase.ts';
+import { rpc, RpcError } from '../../lib/supabase.ts';
 import { KidsShell } from './KidsShell.tsx';
 
 type Phase = { name: 'intro'; card: number } | { name: 'game' } | { name: 'quiz'; question: number } | { name: 'finish' };
@@ -12,11 +12,13 @@ type Phase = { name: 'intro'; card: number } | { name: 'game' } | { name: 'quiz'
 /** Intro cards → sorting game → three check questions → result saved to the database. */
 export function Lesson() {
   const { id = '' } = useParams();
-  const { lang, activeChild, plan } = useApp();
+  const { lang, activeChild, plan, timeUp } = useApp();
+  // Decided once, on entry: a lesson opened before the limit may finish after it.
+  const [openedInTime] = useState(!timeUp);
   const catalogEntry = catalogLessons.find((l) => l.id === id);
   const body = lessonBody(id, lang);
 
-  if (!activeChild || !catalogEntry || !body) return <Navigate to="/kids/home" replace />;
+  if (!activeChild || !catalogEntry || !body || !openedInTime) return <Navigate to="/kids/home" replace />;
   const state = lessonState(catalogEntry, { lang, plan, ageBand: activeChild.age_band, completed: new Set() });
   if (state !== 'open') return <Navigate to="/kids/home" replace />;
 
@@ -27,9 +29,16 @@ function LessonPlayer({ lesson, childId }: { lesson: LessonBody; childId: string
   const { t } = useApp();
   const [phase, setPhase] = useState<Phase>({ name: 'intro', card: 0 });
   const [firstTry, setFirstTry] = useState<boolean[]>([]);
+  const [refused, setRefused] = useState(false);
 
   useEffect(() => {
-    rpc('record_lesson_start', { p_child: childId, p_lesson: lesson.id }).catch(() => undefined);
+    // The database has the final say on the time limit (the app's first heartbeat may
+    // not have returned yet when a lesson opens).
+    rpc('record_lesson_start', { p_child: childId, p_lesson: lesson.id }).catch((error: unknown) => {
+      if (error instanceof RpcError && (error.code === 'time_up' || error.code === 'lesson_not_available')) {
+        setRefused(true);
+      }
+    });
   }, [childId, lesson.id]);
 
   const progressLabel = useMemo(() => {
@@ -37,8 +46,10 @@ function LessonPlayer({ lesson, childId }: { lesson: LessonBody; childId: string
     return null;
   }, [phase, t]);
 
+  if (refused) return <Navigate to="/kids/home" replace />;
+
   return (
-    <KidsShell back="/kids/home">
+    <KidsShell back="/kids/home" finishOpenLesson>
       <h1 className="mb-6 text-3xl">{lesson.title}</h1>
 
       {phase.name === 'intro' && (
@@ -79,8 +90,11 @@ function LessonPlayer({ lesson, childId }: { lesson: LessonBody; childId: string
   );
 }
 
+/** Bins that mean "careful" get the warning colour, so the colour agrees with the label. */
+const WARNING_BINS = new Set(['suspicious', 'scam', 'trick', 'never', 'weak']);
+
 function binColor(binId: string, index: number): string {
-  if (binId === 'suspicious') return 'var(--color-coral)';
+  if (WARNING_BINS.has(binId)) return 'var(--color-coral)';
   return index === 0 ? 'var(--color-teal)' : 'var(--color-violet)';
 }
 

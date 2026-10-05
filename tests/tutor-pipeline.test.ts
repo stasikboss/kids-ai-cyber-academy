@@ -176,6 +176,13 @@ describe('runTutorTurn', () => {
     expect(calls.classifiedIntent).toEqual([]);
   });
 
+  it('stops when the day\'s screen time is used up', async () => {
+    const { deps, calls } = fakeDeps({ gate: { allowed: false, reason: 'time_up', language: 'en' } });
+    const events = await collect(deps, 'What is AI?');
+    expect(events[0]).toEqual({ type: 'notice', kind: 'time_up', text: fixedReply('time_up', 'en') });
+    expect(calls.loggedTurns).toEqual([]);
+  });
+
   it('rejects empty and over-long messages', async () => {
     const { deps } = fakeDeps();
     expect((await collect(deps, '   '))[0]).toMatchObject({ kind: 'invalid_message' });

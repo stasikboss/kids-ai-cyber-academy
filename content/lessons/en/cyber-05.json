@@ -1,0 +1,82 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "cyber-05",
+  "version": 1,
+  "language": "en",
+  "title": "App permissions",
+  "intro": [
+    "A permission is when an app asks to use something on your phone: the camera, microphone, location, contacts or photos.",
+    "The big question: does the app need it to work? A camera app needs the camera. A flashlight doesn't need your contacts.",
+    "When a request looks strange, tap 'Don't allow' and ask a parent. You can always change it later in Settings."
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "Does each request make sense, or is it suspicious?",
+    "bins": [
+      { "id": "makes_sense", "label": "Makes sense" },
+      { "id": "suspicious", "label": "Suspicious" }
+    ],
+    "items": [
+      {
+        "id": "camera_app",
+        "text": "A photo app asks to use the camera",
+        "bin": "makes_sense",
+        "explain": "It needs the camera to take photos. Makes sense."
+      },
+      {
+        "id": "flashlight_contacts",
+        "text": "A flashlight app asks for your contacts",
+        "bin": "suspicious",
+        "explain": "A flashlight just makes light. It has no reason to see your contacts."
+      },
+      {
+        "id": "map_location",
+        "text": "A map app asks for your location",
+        "bin": "makes_sense",
+        "explain": "To show you the way, a map needs to know where you are."
+      },
+      {
+        "id": "puzzle_microphone",
+        "text": "A puzzle game asks to use the microphone all the time",
+        "bin": "suspicious",
+        "explain": "A puzzle doesn't need to hear you. A request like that is a reason to stop and ask."
+      },
+      {
+        "id": "drawing_photos",
+        "text": "A drawing app asks to save your picture to your photos",
+        "bin": "makes_sense",
+        "explain": "To save your picture, it needs to reach your photos. Makes sense."
+      },
+      {
+        "id": "calculator_location",
+        "text": "A calculator asks to know where you are",
+        "bin": "suspicious",
+        "explain": "A calculator does sums. It doesn't need your location."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "what_is",
+      "question": "What is a permission?",
+      "options": ["An app asking to use something on your phone", "A kind of game", "A new password"],
+      "answer": 0,
+      "explain": "A permission is something you let an app do, like use the camera or know where you are."
+    },
+    {
+      "id": "strange",
+      "question": "An app asks for something it doesn't need. What do you do?",
+      "options": ["Allow it quickly to start playing", "Tap 'Don't allow' and ask a parent", "Allow everything, it's always fine"],
+      "answer": 1,
+      "explain": "You're allowed to say no. If the app really needs it, your parents can help decide."
+    },
+    {
+      "id": "later",
+      "question": "You allowed a permission and changed your mind. Can you undo it?",
+      "options": ["No, it's forever", "Only with a new phone", "Yes, in the phone's Settings"],
+      "answer": 2,
+      "explain": "In Settings you can see and change every permission. It's a good idea to do it with a parent."
+    }
+  ],
+  "summary": "Before allowing a permission, ask: does the app really need this? If the request is strange, tap 'Don't allow' and ask a parent. You can change it all later in Settings."
+}

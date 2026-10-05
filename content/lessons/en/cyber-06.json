@@ -1,0 +1,82 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "cyber-06",
+  "version": 1,
+  "language": "en",
+  "title": "Tell a trusted adult",
+  "intro": [
+    "Sometimes something scary, confusing or unkind happens online. It's not your fault, and it happens to other kids too.",
+    "A trusted adult, like a parent, a teacher or someone on the school staff, wants to know and can help. Telling is the right move.",
+    "If someone online asks you to keep something secret from your parents, that's a clear sign to tell. A birthday surprise is fine, because everyone finds out in the end."
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "What do you do in each situation?",
+    "bins": [
+      { "id": "handle", "label": "I can handle it" },
+      { "id": "tell", "label": "Tell a grown-up" }
+    ],
+    "items": [
+      {
+        "id": "secret_request",
+        "text": "Someone you met in a game writes: \"Don't tell your parents we talk\"",
+        "bin": "tell",
+        "explain": "Being asked to keep secrets from your parents is a warning sign. Tell right away."
+      },
+      {
+        "id": "avatar_color",
+        "text": "You can't decide what colour to make your game character",
+        "bin": "handle",
+        "explain": "That's your call. Pick one and have fun."
+      },
+      {
+        "id": "photo_request",
+        "text": "Someone online asks you to send them a photo of yourself",
+        "bin": "tell",
+        "explain": "Don't send photos to people online, and tell an adult you trust."
+      },
+      {
+        "id": "funny_joke",
+        "text": "A classmate sent you a funny, friendly joke",
+        "bin": "handle",
+        "explain": "A friendly joke from someone you know is totally fine."
+      },
+      {
+        "id": "scary_video",
+        "text": "You saw a scary video and can't stop thinking about it",
+        "bin": "tell",
+        "explain": "Talking to a grown-up about what you saw helps you feel better."
+      },
+      {
+        "id": "mean_messages",
+        "text": "Someone keeps sending you mean messages",
+        "bin": "tell",
+        "explain": "Mean messages again and again are cyberbullying. Keep a screenshot and tell an adult."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "who",
+      "question": "Who is a trusted adult?",
+      "options": ["A parent, teacher or adult you know who cares about you", "Anyone online who says they're an adult", "A character in a game"],
+      "answer": 0,
+      "explain": "A trusted adult is someone you know in real life who cares about you."
+    },
+    {
+      "id": "trouble",
+      "question": "You're worried about telling because someone might be angry. What's true?",
+      "options": ["Better to stay quiet", "Telling is right, and a trusted adult will want to help", "Only tell if it happened more than ten times"],
+      "answer": 1,
+      "explain": "Even if a mistake happened, a trusted adult would rather know and help."
+    },
+    {
+      "id": "secret",
+      "question": "What's the difference between a surprise and a secret you should tell about?",
+      "options": ["There's no difference", "Surprises are always scary", "A surprise ends when everyone finds out; a secret from parents gets told"],
+      "answer": 2,
+      "explain": "Surprises are short and happy. When someone asks you to hide something from your parents, you tell."
+    }
+  ],
+  "summary": "When something online is scary, confusing or unkind, or someone asks you to keep a secret from your parents, tell an adult you trust. It's not your fault, and telling is always the right move."
+}

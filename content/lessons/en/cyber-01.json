@@ -1,0 +1,82 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "cyber-01",
+  "version": 1,
+  "language": "en",
+  "title": "Strong passphrases",
+  "intro": [
+    "A password is the key to your accounts. Anyone who knows it can get in, play as you and even change things.",
+    "The strongest passwords are long. You can join a few random words into a funny phrase, like 'purple dragon eats pizza on the moon'.",
+    "A good password is also secret and different for every account. Only you and your parents know it."
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "Sort each password: strong or weak?",
+    "bins": [
+      { "id": "strong", "label": "Strong" },
+      { "id": "weak", "label": "Weak" }
+    ],
+    "items": [
+      {
+        "id": "numbers",
+        "text": "123456",
+        "bin": "weak",
+        "explain": "It's one of the most common passwords in the world. A computer guesses it in a second."
+      },
+      {
+        "id": "four_words",
+        "text": "orange cloud dances with umbrella",
+        "bin": "strong",
+        "explain": "Four random words make a long password that's hard to guess and easy to remember."
+      },
+      {
+        "id": "pet_name",
+        "text": "Your dog's name",
+        "bin": "weak",
+        "explain": "Friends and people online may know that name or guess it."
+      },
+      {
+        "id": "long_sentence",
+        "text": "my turtle runs faster than a blue bus",
+        "bin": "strong",
+        "explain": "A long, odd sentence is a strong password, as long as you don't share it."
+      },
+      {
+        "id": "password1",
+        "text": "password1",
+        "bin": "weak",
+        "explain": "A common word with a number at the end is one of the first things attackers try."
+      },
+      {
+        "id": "same_everywhere",
+        "text": "A long, good password, but the same one in every game",
+        "bin": "weak",
+        "explain": "If one game gets hacked, all your other accounts are at risk. Every account gets its own password."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "strongest",
+      "question": "Which password is the strongest?",
+      "options": ["green cat drinks juice on the roof", "abc123", "Your birthday"],
+      "answer": 0,
+      "explain": "A few random words together make a long password that's hard to guess."
+    },
+    {
+      "id": "reuse",
+      "question": "Why not use the same password everywhere?",
+      "options": ["Because it's boring", "Because if it leaks in one place, every account is at risk", "Because the computer gets confused"],
+      "answer": 1,
+      "explain": "A different password for each account keeps the rest safe, even if one is hacked."
+    },
+    {
+      "id": "share",
+      "question": "A good friend asks for your game password. What do you do?",
+      "options": ["Share it, friends share everything", "Share it only if they promise to keep it secret", "Don't. Only you and your parents know it"],
+      "answer": 2,
+      "explain": "Even good friends don't need your password. That way the account stays yours."
+    }
+  ],
+  "summary": "A strong password is long, like a few random words together. It's different for every account, and only you and your parents know it."
+}

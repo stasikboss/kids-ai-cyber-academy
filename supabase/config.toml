@@ -47,3 +47,6 @@ verify_jwt = true
 
 [functions.create-family]
 verify_jwt = true
+
+[functions.delete-family]
+verify_jwt = true
