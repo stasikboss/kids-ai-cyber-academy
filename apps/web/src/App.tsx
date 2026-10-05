@@ -9,6 +9,7 @@ import { KidsPicker } from './pages/kids/KidsPicker.tsx';
 import { Lesson } from './pages/kids/Lesson.tsx';
 import { Tutor } from './pages/kids/Tutor.tsx';
 import { ParentHome } from './pages/ParentHome.tsx';
+import { Plan } from './pages/Plan.tsx';
 import { Setup } from './pages/Setup.tsx';
 import { SignIn } from './pages/SignIn.tsx';
 
@@ -69,6 +70,7 @@ function Routed() {
       <Route path="/setup" element={app.session ? (app.activeChild ? <Navigate to="/kids/home" replace /> : <Setup />) : <Navigate to="/signin" replace />} />
       <Route path="/parent" element={<ParentOnly><ParentHome /></ParentOnly>} />
       <Route path="/parent/add-child" element={<ParentOnly><AddChildPage /></ParentOnly>} />
+      <Route path="/parent/plan" element={<ParentOnly><Plan /></ParentOnly>} />
       <Route path="/kids" element={app.activeChild ? <Navigate to="/kids/home" replace /> : <ParentOnly><KidsPicker /></ParentOnly>} />
       <Route path="/kids/home" element={<ChildOnly><KidHome /></ChildOnly>} />
       <Route path="/kids/lesson/:id" element={<ChildOnly><Lesson /></ChildOnly>} />

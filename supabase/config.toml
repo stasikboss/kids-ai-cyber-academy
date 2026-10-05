@@ -50,3 +50,16 @@ verify_jwt = true
 
 [functions.delete-family]
 verify_jwt = true
+
+[functions.billing-checkout]
+verify_jwt = true
+
+[functions.billing-cancel]
+verify_jwt = true
+
+# Grow cannot send a Supabase JWT. Each notification is verified with Grow instead.
+[functions.billing-webhook]
+verify_jwt = false
+
+[functions.billing-invoices]
+verify_jwt = true

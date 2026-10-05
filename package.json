@@ -17,7 +17,7 @@
     "validate:content": "tsx scripts/validate-content.ts",
     "build:lessons": "tsx scripts/build-lessons.ts",
     "build:seed": "tsx scripts/build-seed.ts",
-    "check:functions": "deno check --config supabase/functions/deno.json supabase/functions/tutor-chat/index.ts supabase/functions/create-family/index.ts supabase/functions/delete-family/index.ts",
+    "check:functions": "deno check --config supabase/functions/deno.json supabase/functions/tutor-chat/index.ts supabase/functions/create-family/index.ts supabase/functions/delete-family/index.ts supabase/functions/billing-checkout/index.ts supabase/functions/billing-webhook/index.ts supabase/functions/billing-cancel/index.ts supabase/functions/billing-invoices/index.ts",
     "check:worker": "tsc -p workers/geo-gate/tsconfig.json",
     "typecheck": "tsc -p tsconfig.json && npm run check:worker && npm -w apps/web run typecheck",
     "evals:online": "tsx evals/run-online.ts",

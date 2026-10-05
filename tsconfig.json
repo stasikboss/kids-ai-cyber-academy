@@ -21,5 +21,6 @@
     "scripts/**/*.ts",
     "evals/**/*.ts",
     "content/source/**/*.ts"
-  ]
+  ],
+  "exclude": ["supabase/functions/_shared/billing-env.ts"]
 }

@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../lib/app-state.tsx';
 import { useStepUp } from '../lib/step-up.tsx';
-import { rpc, SUPABASE_ANON_KEY, SUPABASE_URL, supabase } from '../lib/supabase.ts';
+import { callFunction, FunctionError, rpc, supabase } from '../lib/supabase.ts';
 import type { Child } from '../lib/types.ts';
 
 /** Shown once on the sign-in page after a family deletes its space. */
@@ -88,11 +89,12 @@ export function DeleteChildControl({ child }: { child: Child }) {
 }
 
 export function FamilyDataSection() {
-  const { t, session } = useApp();
+  const { t } = useApp();
   const { withStepUp, requireStepUp } = useStepUp();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [cancelFirst, setCancelFirst] = useState(false);
 
   const exportData = async () => {
     setMessage(null);
@@ -107,35 +109,20 @@ export function FamilyDataSection() {
   const deleteFamily = async () => {
     setBusy(true);
     setMessage(null);
+    setCancelFirst(false);
     try {
       if (!(await requireStepUp())) return;
-      const { data } = await supabase.auth.getSession();
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/delete-family`, {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${data.session?.access_token ?? session?.access_token ?? ''}`,
-          apikey: SUPABASE_ANON_KEY,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({ confirm: 'delete-family' }),
-      });
-      const body = (await response.json().catch(() => ({}))) as { error?: string };
-      if (response.ok) {
-        try {
-          sessionStorage.setItem(NOTICE_KEY, 'family_deleted');
-        } catch {
-          // The notice is a courtesy; deletion already happened.
-        }
-        await supabase.auth.signOut({ scope: 'local' });
-        return;
+      await callFunction('delete-family', { confirm: 'delete-family' });
+      try {
+        sessionStorage.setItem(NOTICE_KEY, 'family_deleted');
+      } catch {
+        // The notice is a courtesy; deletion already happened.
       }
-      setMessage(
-        body.error === 'owner_only' ? t('data.ownerOnly')
-          : body.error === 'cancel_subscription_first' ? t('data.cancelFirst')
-            : t('common.error'),
-      );
-    } catch {
-      setMessage(t('common.error'));
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch (error) {
+      const code = error instanceof FunctionError ? error.code : '';
+      if (code === 'cancel_subscription_first') setCancelFirst(true);
+      else setMessage(code === 'owner_only' ? t('data.ownerOnly') : t('common.error'));
     } finally {
       setBusy(false);
     }
@@ -167,6 +154,11 @@ export function FamilyDataSection() {
         )}
       </div>
       {message && <p role="alert" className="text-sm text-coral">{message}</p>}
+      {cancelFirst && (
+        <p role="alert" className="text-sm text-coral">
+          {t('data.cancelFirst')} <Link to="/parent/plan" className="underline underline-offset-4">{t('plan.link')}</Link>
+        </p>
+      )}
     </section>
   );
 }

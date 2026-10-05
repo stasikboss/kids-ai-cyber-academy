@@ -35,7 +35,7 @@ function LessonPlayer({ lesson, childId }: { lesson: LessonBody; childId: string
     // The database has the final say on the time limit (the app's first heartbeat may
     // not have returned yet when a lesson opens).
     rpc('record_lesson_start', { p_child: childId, p_lesson: lesson.id }).catch((error: unknown) => {
-      if (error instanceof RpcError && (error.code === 'time_up' || error.code === 'lesson_not_available')) {
+      if (error instanceof RpcError && ['time_up', 'lesson_not_available', 'child_paused'].includes(error.code)) {
         setRefused(true);
       }
     });

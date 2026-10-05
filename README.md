@@ -5,10 +5,12 @@ safety through short game lessons and a guarded AI tutor, SI, a dragon robot. Pa
 the account; children never give an email, real name, photo or voice. Launch is
 Israel-only.
 
-This repository covers Sprint 0 and the rest of Phase 1: the security-critical
-foundations, all 15 lessons in both languages, a daily time limit enforced by the
-database, and family data export and deletion. Billing is next. The product plan lives in
-the planning doc.
+This repository covers Sprint 0, Phase 1 and the Phase 2 billing build: the
+security-critical foundations, all 15 lessons in both languages, a daily time limit
+enforced by the database, family data export and deletion, and the Family plan with
+Grow monthly payments and iCount invoices. Billing still has to be run end to end in
+Grow's and iCount's sandboxes (see "Before the private pilot"). The product plan lives
+in the planning doc.
 
 ## What is here
 
@@ -19,6 +21,7 @@ the planning doc.
 | `supabase/functions/tutor-chat/` | Edge Function wiring the pipeline to Supabase and Claude Haiku 4.5 (server-sent events) |
 | `supabase/functions/create-family/` | Family creation; accepts only requests signed by the geo gate |
 | `supabase/functions/delete-family/` | Deletes a family's data and its parents' sign-in accounts (owner only, fresh TOTP) |
+| `supabase/functions/billing-*/` | Family plan: `checkout` (Grow payment page), `webhook` (Grow notifications, verified with Grow), `cancel`, `invoices` (iCount retry queue) |
 | `workers/geo-gate/` | Cloudflare Worker: Israel-only gate in front of family creation (HTTP 451 elsewhere) |
 | `content/` | Lesson catalog, JSON schema, bilingual lesson sources and the generated Hebrew and English lesson files (15 lessons) |
 | `evals/` | Tutor evaluation set v1 (107 cases) and the online release-gate runner |
@@ -49,6 +52,17 @@ the planning doc.
   family deletion is owner-only and refused while a paid subscription is still renewing.
   Deletion removes the parents' sign-in accounts too and leaves one audit row with no
   family link.
+- **Payments are verified, never trusted:** Grow's notifications carry no signature, so
+  the webhook looks every transaction up with Grow (`getTransactionInfo`) and records
+  only what Grow confirms: paid, the amount, the standing order. The server sets every
+  price; a payment for the wrong amount is recorded but does not grant the plan.
+  Replays are harmless (one ledger row per transaction). Card details only ever go to
+  Grow's hosted page.
+- **Plans lapse by date, not by a job:** a renewing plan stays Family for 7 days past
+  its period end while a late renewal comes in; a canceled plan stays until its period
+  end. When a plan lapses, profiles beyond the free limit are paused, not deleted.
+  Cancelling stops Grow's standing order first; if Grow can't be reached, nothing is
+  marked canceled.
 - **Israel-only:** `families.country` is pinned to `IL`, and family creation is only
   reachable through the Worker, which signs the visitor's country, a timestamp and the
   caller's token with HMAC.
@@ -58,8 +72,8 @@ the planning doc.
 ```bash
 npm install
 npm run validate:content   # schema, catalog, Hebrew/English parity
-npm test                   # 190 unit tests incl. the offline eval gates and lesson drift check
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres npm run test:db   # 32 RLS/RPC tests
+npm test                   # 222 unit tests incl. the offline eval gates, lesson drift check, billing flows
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres npm run test:db   # 48 RLS/RPC/billing tests
 npm run typecheck          # shared code, Worker, web app
 npm run check:functions    # Edge Functions under Deno
 ANTHROPIC_API_KEY=... npm run evals:online   # classifier release gates (needs the API)
@@ -102,13 +116,21 @@ npm run dev                                # http://localhost:5173, /api proxied
    claim format (no custom access-token hook that rewrites it).
 2. `npx supabase link`, then `npx supabase db push` and run `supabase/seed.sql`.
 3. Set function secrets from `supabase/functions/.env.example`, then
-   `npx supabase functions deploy tutor-chat create-family delete-family`.
-4. Deploy the Worker with the same `GATE_SECRET` and route it on the app's domain at
+   `npx supabase functions deploy tutor-chat create-family delete-family billing-checkout billing-webhook billing-cancel billing-invoices`.
+   `billing-webhook` deploys with `verify_jwt = false` (Grow cannot send a JWT; see
+   `supabase/config.toml`).
+4. Billing: ask Grow for the recurring page code and register
+   `https://<project>.supabase.co/functions/v1/billing-webhook?k=<GROW_WEBHOOK_SECRET>`
+   as the webhook for monthly charges (sandbox and production are configured
+   separately). In Supabase Cron, call `billing-invoices` every 15 minutes with the
+   service-role key as the bearer token. Set the confirmed price in
+   `plan_limits.monthly_price_agorot` (it is ₪29.90 as a placeholder).
+5. Deploy the Worker with the same `GATE_SECRET` and route it on the app's domain at
    `/api/create-family`; add a Cloudflare rate-limit rule on that path.
-5. Build `apps/web` and deploy to Cloudflare Pages with security headers (CSP without
+6. Build `apps/web` and deploy to Cloudflare Pages with security headers (CSP without
    inline script, HSTS, `frame-ancestors 'none'`, `Permissions-Policy` denying camera,
    microphone and geolocation).
-6. Without `pg_cron`, schedule `select app.purge_expired()` daily some other way.
+7. Without `pg_cron`, schedule `select app.purge_expired()` daily some other way.
 
 ## Before the private pilot
 
@@ -118,7 +140,21 @@ npm run dev                                # http://localhost:5173, /api proxied
 - [ ] Add Anthropic's child-safety system prompt if one is published (`ANTHROPIC_CHILD_SAFETY_PROMPT`).
 - [ ] Privacy notice and the public compliance statement Anthropic's minors guidelines ask for; lawyer review.
 - [ ] Review all 15 lessons with a teacher and a native Hebrew editor; try them with a few children.
-- [ ] Billing: Grow or Tranzila for payments, iCount for invoices (Phase 2).
+- [ ] Confirm the Family plan price (placeholder ₪29.90 a month, VAT included).
+- [ ] Grow sandbox, end to end: the `createPaymentProcess` fields for a recurring page
+      code, the `getTransactionInfo` response shape, what `approveTransaction` expects,
+      and the monthly webhook's format. All of it is isolated in
+      `supabase/functions/_shared/grow.ts`, whose parsers fail closed. Then Grow's
+      integration review for production.
+- [ ] iCount: check `supabase/functions/_shared/icount.ts` against iCount's API
+      reference (it could not be read while this was built) and issue one real document
+      in a test company. Or set `INVOICING=gateway` and let Grow issue the invoices.
+- [ ] Accountant: invoice-receipts to "Private customer" without a name, VAT-inclusive
+      pricing, and how refunds are documented.
+- [ ] Lawyer: cancellation terms for a continuing transaction under the Consumer
+      Protection Law (in-app cancellation, timing, confirmation) and the refund policy.
+- [ ] Watch the function logs for `billing ALERT` (duplicate payments, amount
+      mismatches, charges after cancellation, unknown payments); each needs a person.
 
 ## Data the app keeps
 
@@ -126,3 +162,9 @@ Per child: nickname, character, age band, language, settings, a hashed picture P
 lesson progress, badges and seconds of use per day (deleted after 90 days). Tutor transcripts are redacted before storage and deleted
 after 30 days; safety events hold labels only, never message text, and are deleted after
 90 days. No child email, birthdate, real name, photo, voice or location, ever.
+
+Per family, for billing: the plan and its dates, and one row per payment (amount, Grow's
+transaction and approval numbers, invoice status). The identifiers Grow needs to stop
+a standing order are hidden from the app and left out of the export. Card details and
+the payer's name never reach this app; they stay with Grow, and tax documents stay in
+iCount.

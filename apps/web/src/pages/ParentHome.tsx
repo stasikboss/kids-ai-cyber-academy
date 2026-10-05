@@ -55,7 +55,10 @@ export function ParentHome() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl">{t('parent.title')}</h1>
-          <p className="text-ink-soft">{t(plan === 'family' ? 'parent.plan.family' : 'parent.plan.free')}</p>
+          <p className="flex flex-wrap gap-x-3 text-ink-soft">
+            <span>{t(plan === 'family' ? 'parent.plan.family' : 'parent.plan.free')}</span>
+            <Link to="/parent/plan" className="underline decoration-teal underline-offset-4">{t('plan.link')}</Link>
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <LanguageSwitch />
@@ -124,7 +127,7 @@ export function ParentHome() {
 }
 
 function ChildPanel({ child, progress }: { child: Child; progress: Progress[] }) {
-  const { t } = useApp();
+  const { t, isPaused } = useApp();
   const [quota, setQuota] = useState<{ used: number; limit: number } | null>(null);
   const [minutesToday, setMinutesToday] = useState(0);
   const [showTranscript, setShowTranscript] = useState(false);
@@ -143,6 +146,9 @@ function ChildPanel({ child, progress }: { child: Child; progress: Progress[] })
         <Avatar id={child.avatar_id} size={56} />
         <div className="space-y-1">
           <h2 className="text-xl">{child.nickname}</h2>
+          {isPaused(child.id) && (
+            <p><Link to="/parent/plan" className="rounded-full bg-mist px-3 py-0.5 text-sm">{t('parent.paused')}</Link></p>
+          )}
           <p className="text-sm text-ink-soft">{t('parent.lessonsDone', { done, total: catalogLessons.length })}</p>
           {quota && <p className="text-sm text-ink-soft">{t('parent.tutorToday', quota)}</p>}
           <p className="text-sm text-ink-soft">{t('parent.timeToday', { used: minutesToday, limit: child.daily_minutes })}</p>

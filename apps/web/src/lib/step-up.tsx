@@ -1,6 +1,6 @@
 import { createContext, type FormEvent, type ReactNode, useCallback, useContext, useRef, useState } from 'react';
 import { useApp } from './app-state.tsx';
-import { RpcError, supabase } from './supabase.ts';
+import { FunctionError, RpcError, supabase } from './supabase.ts';
 
 /**
  * Parent step-up. The database refuses sensitive changes unless the session holds a
@@ -62,7 +62,8 @@ export function StepUpProvider({ children }: { children: ReactNode }) {
     try {
       return await fn();
     } catch (err) {
-      if (err instanceof RpcError && err.code === 'step_up_required' && (await ask())) return fn();
+      const stale = (err instanceof RpcError || err instanceof FunctionError) && err.code === 'step_up_required';
+      if (stale && (await ask())) return fn();
       throw err;
     }
   }, [ask, requireStepUp]);

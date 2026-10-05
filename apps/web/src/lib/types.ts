@@ -62,3 +62,24 @@ export interface Family {
   id: string;
   locale: Lang;
 }
+
+export type BillingPhase = 'free' | 'active' | 'past_due' | 'canceled';
+
+/** From the billing_status RPC: the plan in force, computed by the database. */
+export interface BillingStatus {
+  plan: Plan;
+  phase: BillingPhase;
+  renews: boolean;
+  current_period_end: string | null;
+  grace_until: string | null;
+  price_agorot: number;
+  paused_children: string[];
+}
+
+export interface Invoice {
+  id: string;
+  document_id: string;
+  document_url: string | null;
+  amount_agorot: number;
+  issued_at: string;
+}

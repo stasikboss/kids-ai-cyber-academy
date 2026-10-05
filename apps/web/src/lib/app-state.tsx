@@ -5,7 +5,7 @@ import {
 import { applyDocumentLanguage, type MessageKey, translate } from './i18n.ts';
 import { useScreenTime } from './screen-time.ts';
 import { supabase } from './supabase.ts';
-import type { Child, Family, Lang, Plan, PlanLimits } from './types.ts';
+import type { BillingStatus, Child, Family, Lang, Plan, PlanLimits } from './types.ts';
 
 interface AppState {
   ready: boolean;
@@ -13,6 +13,10 @@ interface AppState {
   family: Family | null;
   children: Child[];
   plan: Plan;
+  /** The plan as the database computes it; null until loaded. */
+  billing: BillingStatus | null;
+  /** Profiles beyond the plan's child limit are paused (kept, not playable). */
+  isPaused: (childId: string) => boolean;
   limits: PlanLimits | null;
   hasCoreConsent: boolean;
   hasTutorConsent: boolean;
@@ -56,6 +60,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
   const [family, setFamily] = useState<Family | null>(null);
   const [kids, setKids] = useState<Child[]>([]);
   const [plan, setPlan] = useState<Plan>('free');
+  const [billing, setBilling] = useState<BillingStatus | null>(null);
   const [limits, setLimits] = useState<PlanLimits | null>(null);
   const [consents, setConsents] = useState<string[]>([]);
   const [activeChildId, setActiveChildId] = useState<string | null>(() => readStorage(sessionStorage, ACTIVE_CHILD_KEY));
@@ -78,26 +83,24 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
       return;
     }
 
-    const [familyRes, kidsRes, subRes, consentRes, limitsRes] = await Promise.all([
+    const [familyRes, kidsRes, billingRes, consentRes, limitsRes] = await Promise.all([
       supabase.from('families').select('id, locale').eq('id', guardian.family_id).single(),
       supabase.from('children')
         .select('id, family_id, nickname, avatar_id, age_band, language, daily_minutes, tutor_enabled, pin_locked_until, active, created_at')
         .order('created_at'),
-      supabase.from('subscriptions').select('plan, status, current_period_end').maybeSingle(),
+      supabase.rpc('billing_status'),
       supabase.from('consents').select('scope').is('revoked_at', null),
       supabase.from('plan_limits').select('plan, max_children, tutor_daily_messages, ai_security_track'),
     ]);
 
-    const sub = subRes.data;
-    const paid = sub?.plan === 'family' && (
-      sub.status === 'active' || sub.status === 'grace'
-      || (sub.status === 'canceled' && !!sub.current_period_end && new Date(sub.current_period_end) > new Date())
-    );
-    const currentPlan: Plan = paid ? 'family' : 'free';
+    // The database decides the plan (grace periods, cancellations); the app only shows it.
+    const status = (billingRes.data ?? null) as BillingStatus | null;
+    const currentPlan: Plan = status?.plan === 'family' ? 'family' : 'free';
 
     setFamily(familyRes.data as Family | null);
     setKids((kidsRes.data ?? []) as Child[]);
     setPlan(currentPlan);
+    setBilling(status);
     setLimits(((limitsRes.data ?? []) as PlanLimits[]).find((l) => l.plan === currentPlan) ?? null);
     setConsents((consentRes.data ?? []).map((c) => c.scope as string));
   }, []);
@@ -137,6 +140,8 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
     family,
     children: kids,
     plan,
+    billing,
+    isPaused: (childId) => billing?.paused_children.includes(childId) ?? false,
     limits,
     hasCoreConsent: consents.includes('core'),
     hasTutorConsent: consents.includes('tutor'),
@@ -157,7 +162,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
     },
     refresh: () => load(session),
     t: (key, vars) => translate(lang, key, vars),
-  }), [ready, session, family, kids, plan, limits, consents, activeChild, timeUp, lang, load]);
+  }), [ready, session, family, kids, plan, billing, limits, consents, activeChild, timeUp, lang, load]);
 
   return <AppContext.Provider value={value}>{content}</AppContext.Provider>;
 }

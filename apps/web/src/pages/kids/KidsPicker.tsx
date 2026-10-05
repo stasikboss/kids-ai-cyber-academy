@@ -13,7 +13,7 @@ interface PinResult {
 }
 
 export function KidsPicker() {
-  const { t, children, enterChildMode } = useApp();
+  const { t, children, enterChildMode, isPaused } = useApp();
   const navigate = useNavigate();
   const [selected, setSelected] = useState<Child | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -49,11 +49,13 @@ export function KidsPicker() {
               <li key={child.id}>
                 <button
                   type="button"
-                  className="card-ink flex w-40 flex-col items-center gap-2 p-4 shadow-[0_4px_0_var(--color-ink)] active:translate-y-[3px] active:shadow-[0_1px_0_var(--color-ink)]"
+                  disabled={isPaused(child.id)}
+                  className="card-ink flex w-40 flex-col items-center gap-2 p-4 shadow-[0_4px_0_var(--color-ink)] active:translate-y-[3px] active:shadow-[0_1px_0_var(--color-ink)] disabled:opacity-60 disabled:shadow-none"
                   onClick={() => { setSelected(child); setMessage(null); }}
                 >
                   <Avatar id={child.avatar_id} size={88} />
                   <span lang={child.language} className="font-display text-xl">{child.nickname}</span>
+                  {isPaused(child.id) && <span className="text-sm">{t('kids.paused')}</span>}
                 </button>
               </li>
             ))}
