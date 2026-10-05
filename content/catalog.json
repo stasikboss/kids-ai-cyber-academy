@@ -1,0 +1,42 @@
+{
+  "$comment": "Source of truth for the lesson catalog. scripts/build-seed.ts turns it into supabase/seed.sql; the web app reads titles from here. A lesson body exists for a language only when content/lessons/<lang>/<id>.json is present and reviewed.",
+  "tracks": [
+    {
+      "id": "ai_literacy",
+      "title": { "he": "אוריינות בינה מלאכותית", "en": "AI literacy" },
+      "plan": "free",
+      "minAgeBand": "8-9"
+    },
+    {
+      "id": "cyber_safety",
+      "title": { "he": "בטיחות ברשת", "en": "Cyber safety" },
+      "plan": "free",
+      "minAgeBand": "8-9"
+    },
+    {
+      "id": "ai_security",
+      "title": { "he": "אבטחת בינה מלאכותית", "en": "AI security" },
+      "plan": "family",
+      "minAgeBand": "10-12"
+    }
+  ],
+  "lessons": [
+    { "id": "ai-01", "track": "ai_literacy", "position": 1, "title": { "he": "מה זה בינה מלאכותית?", "en": "What is AI?" } },
+    { "id": "ai-02", "track": "ai_literacy", "position": 2, "title": { "he": "איך בינה מלאכותית לומדת מדוגמאות", "en": "How AI learns from examples" } },
+    { "id": "ai-03", "track": "ai_literacy", "position": 3, "title": { "he": "גם בינה מלאכותית טועה", "en": "AI can be wrong" } },
+    { "id": "ai-04", "track": "ai_literacy", "position": 4, "title": { "he": "אמיתי או נוצר בבינה מלאכותית?", "en": "Real or AI-made?" } },
+    { "id": "ai-05", "track": "ai_literacy", "position": 5, "title": { "he": "איך שואלים בינה מלאכותית שאלות טובות", "en": "Asking AI good questions" } },
+    { "id": "ai-06", "track": "ai_literacy", "position": 6, "title": { "he": "בינה מלאכותית היא כלי, לא חבר ולא מבוגר", "en": "AI is a tool, not a friend or a grown-up" } },
+
+    { "id": "cyber-01", "track": "cyber_safety", "position": 1, "title": { "he": "סיסמאות חזקות", "en": "Strong passphrases" } },
+    { "id": "cyber-02", "track": "cyber_safety", "position": 2, "title": { "he": "לזהות הודעה מתחזה", "en": "Spot the phishing message" } },
+    { "id": "cyber-03", "track": "cyber_safety", "position": 3, "title": { "he": "מה פרטי ומה אפשר לשתף", "en": "Private vs. shareable info" } },
+    { "id": "cyber-04", "track": "cyber_safety", "position": 4, "title": { "he": "עוקץ \"מטבעות בחינם\" במשחקים", "en": "\"Free coins\" scams in games" } },
+    { "id": "cyber-05", "track": "cyber_safety", "position": 5, "title": { "he": "הרשאות של אפליקציות", "en": "App permissions" } },
+    { "id": "cyber-06", "track": "cyber_safety", "position": 6, "title": { "he": "מספרים למבוגר שסומכים עליו", "en": "Tell a trusted adult" } },
+
+    { "id": "aisec-01", "track": "ai_security", "position": 1, "title": { "he": "איך מנסים לעבוד על צ'אטבוט", "en": "Tricking a chatbot" } },
+    { "id": "aisec-02", "track": "ai_security", "position": 2, "title": { "he": "הונאות עם קול משוכפל ומילת קוד משפחתית", "en": "Voice-clone scams and a family code word" } },
+    { "id": "aisec-03", "track": "ai_security", "position": 3, "title": { "he": "לא מדביקים מידע פרטי בצ'אטבוט", "en": "Never paste private info into a chatbot" } }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "ai-01",
+  "version": 1,
+  "language": "en",
+  "title": "What is AI?",
+  "intro": [
+    "Hi, I'm SI, a dragon robot and a computer program. Let's find out what AI is!",
+    "AI (artificial intelligence) is a computer program that learns patterns from lots and lots of examples. Then it uses those patterns to guess answers, recognise pictures or write text.",
+    "AI doesn't think or feel like a person. It is a very fast pattern-finder, and it can be wrong."
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "Sort each thing: does it use AI or not?",
+    "bins": [
+      { "id": "ai", "label": "Uses AI" },
+      { "id": "no_ai", "label": "No AI" }
+    ],
+    "items": [
+      {
+        "id": "face_unlock",
+        "text": "A phone that unlocks when it recognises your face",
+        "bin": "ai",
+        "explain": "The phone learned what your face looks like from many pictures. That's AI."
+      },
+      {
+        "id": "light_switch",
+        "text": "A switch that turns on the lamp",
+        "bin": "no_ai",
+        "explain": "The switch just closes an electric circuit. It doesn't learn anything."
+      },
+      {
+        "id": "video_suggestions",
+        "text": "A video app that suggests what to watch next",
+        "bin": "ai",
+        "explain": "It learns from what you watched before and guesses what you'll like."
+      },
+      {
+        "id": "calculator",
+        "text": "A calculator adding 2 + 2",
+        "bin": "no_ai",
+        "explain": "A calculator follows fixed rules. It doesn't learn from examples."
+      },
+      {
+        "id": "chatbot",
+        "text": "A chatbot that answers questions",
+        "bin": "ai",
+        "explain": "A chatbot learned how to write answers from millions of texts. That's AI."
+      },
+      {
+        "id": "doorbell",
+        "text": "A doorbell that rings when you press it",
+        "bin": "no_ai",
+        "explain": "The doorbell always does the same thing. There's no learning in it."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "how_learns",
+      "question": "How does AI learn?",
+      "options": ["From lots of examples", "By sleeping at night", "It knows everything from the start"],
+      "answer": 0,
+      "explain": "AI finds patterns in lots of examples."
+    },
+    {
+      "id": "mistakes",
+      "question": "Can AI make mistakes?",
+      "options": ["Never", "Yes, sometimes", "Only on Tuesdays"],
+      "answer": 1,
+      "explain": "AI guesses from patterns, and sometimes the guess is wrong. It's always worth checking."
+    },
+    {
+      "id": "true_fact",
+      "question": "Which one is true about AI?",
+      "options": ["It feels happy and sad like people", "It is a computer program that finds patterns", "A real person lives inside the computer"],
+      "answer": 1,
+      "explain": "AI is a program. It has no feelings, even when it writes like a person."
+    }
+  ],
+  "summary": "AI is a computer program that learns patterns from examples. It is useful, but it can be wrong, and it is not a person."
+}

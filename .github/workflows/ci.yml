@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Content (schema, catalog, Hebrew/English parity)
+        run: npm run validate:content
+      - name: Unit tests and offline eval gates
+        run: npm test
+      - name: Database tests (RLS, RPCs, retention)
+        run: npm run test:db
+      - name: Typecheck (shared, Worker, web)
+        run: npm run typecheck
+      - name: Typecheck Edge Functions (Deno)
+        run: npm run check:functions
+      - name: Build web app
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://ci.supabase.co
+          VITE_SUPABASE_ANON_KEY: ci

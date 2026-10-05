@@ -1,0 +1,83 @@
+{
+  "$schema": "../../schema/lesson.schema.json",
+  "id": "cyber-02",
+  "version": 1,
+  "language": "en",
+  "title": "Spot the phishing message",
+  "intro": [
+    "Phishing is a fake message that pretends to come from someone you trust, like a game company, a bank or a friend.",
+    "It tries to make you click a link, hand over a password or hurry. Hurrying you is a big clue!",
+    "Clues to look for: rushing, asking for passwords or codes, prizes that sound too good to be true, and strange links or spelling."
+  ],
+  "game": {
+    "type": "sort",
+    "prompt": "Sort each message: does it look safe or suspicious?",
+    "practiceNotice": "These are practice messages we made up for this game. They are not real.",
+    "bins": [
+      { "id": "safe", "label": "Looks safe" },
+      { "id": "suspicious", "label": "Suspicious" }
+    ],
+    "items": [
+      {
+        "id": "urgent_delete",
+        "text": "URGENT! Your game account will be deleted in 1 hour. Send your password to keep it.",
+        "bin": "suspicious",
+        "explain": "Real companies never ask for your password, and rushing you is a trick."
+      },
+      {
+        "id": "mom_pickup",
+        "text": "Mom: I'm picking you up from the library at 4.",
+        "bin": "safe",
+        "explain": "A normal message from someone you know, asking for nothing secret. If anything feels off, you can always call and check."
+      },
+      {
+        "id": "free_coins",
+        "text": "Congratulations! You won 10,000 free coins! Click here and enter your username and password to claim them.",
+        "bin": "suspicious",
+        "explain": "A prize you never entered for, plus a request for your login, are big clues."
+      },
+      {
+        "id": "code_back",
+        "text": "A friend you only know from a game: I sent you a code by mistake, can you send it back to me?",
+        "bin": "suspicious",
+        "explain": "A code is like a key. Someone asking for a code you received is trying to get into your account."
+      },
+      {
+        "id": "class_trip",
+        "text": "Class group: Tomorrow we're going on a trip. Bring a hat and water.",
+        "bin": "safe",
+        "explain": "A normal message from your class, with no links and no secret requests."
+      },
+      {
+        "id": "parcel_fee",
+        "text": "Your parcel is waiting! Pay a small delivery fee at the link to get it.",
+        "bin": "suspicious",
+        "explain": "A surprise payment with a link is a common trick. Ask a grown-up to check."
+      }
+    ]
+  },
+  "quiz": [
+    {
+      "id": "hurry",
+      "question": "A message says: \"Hurry! Do it now or you'll lose your account!\" What do you do?",
+      "options": ["Do what it says, fast", "Stop and show a grown-up you trust", "Forward it to friends"],
+      "answer": 1,
+      "explain": "Rushing you is a clue that it's a trick. Stop and ask a grown-up."
+    },
+    {
+      "id": "password_who",
+      "question": "Who can you tell your password to?",
+      "options": ["A game company that asks by message", "A new online friend", "Nobody, except a parent when needed"],
+      "answer": 2,
+      "explain": "Passwords stay private. Real companies never ask for them in a message."
+    },
+    {
+      "id": "clue",
+      "question": "Which of these is a clue that a message is fake?",
+      "options": ["It asks for a code or a password", "It's from your class group about a trip", "It has no links"],
+      "answer": 0,
+      "explain": "Asking for codes or passwords is one of the biggest phishing clues."
+    }
+  ],
+  "summary": "If a message rushes you, offers a surprise prize, or asks for a password or code, stop and show a grown-up you trust."
+}

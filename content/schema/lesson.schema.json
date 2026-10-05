@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kids-ai-cyber-academy/lesson.schema.json",
+  "title": "Lesson",
+  "description": "One lesson in one language. Track, order, plan and age band come from content/catalog.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "language", "title", "intro", "game", "quiz", "summary"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "type": "string", "pattern": "^[a-z]+-[0-9]{2}$" },
+    "version": { "type": "integer", "minimum": 1 },
+    "language": { "enum": ["he", "en"] },
+    "title": { "$ref": "#/$defs/shortText" },
+    "intro": {
+      "description": "Story intro, one card per paragraph.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": { "$ref": "#/$defs/paragraph" }
+    },
+    "game": { "$ref": "#/$defs/sortGame" },
+    "quiz": {
+      "description": "Exactly three check questions; the lesson score is the number answered right first time.",
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/question" }
+    },
+    "summary": { "$ref": "#/$defs/paragraph" }
+  },
+  "$defs": {
+    "shortText": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "paragraph": { "type": "string", "minLength": 1, "maxLength": 300 },
+    "slug": { "type": "string", "pattern": "^[a-z0-9_]{1,24}$" },
+    "sortGame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "prompt", "bins", "items"],
+      "properties": {
+        "type": { "const": "sort" },
+        "prompt": { "$ref": "#/$defs/paragraph" },
+        "practiceNotice": {
+          "description": "Shown above drill content that imitates real messages, so it is never mistaken for the real thing.",
+          "$ref": "#/$defs/paragraph"
+        },
+        "bins": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label"],
+            "properties": {
+              "id": { "$ref": "#/$defs/slug" },
+              "label": { "type": "string", "minLength": 1, "maxLength": 30 }
+            }
+          }
+        },
+        "items": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "text", "bin", "explain"],
+            "properties": {
+              "id": { "$ref": "#/$defs/slug" },
+              "text": { "type": "string", "minLength": 1, "maxLength": 200 },
+              "bin": { "$ref": "#/$defs/slug" },
+              "explain": { "$ref": "#/$defs/paragraph" }
+            }
+          }
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "question", "options", "answer", "explain"],
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "question": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "options": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": { "type": "string", "minLength": 1, "maxLength": 80 }
+        },
+        "answer": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "explain": { "$ref": "#/$defs/paragraph" }
+      }
+    }
+  }
+}

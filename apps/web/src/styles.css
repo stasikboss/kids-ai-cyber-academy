@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@import "@fontsource/secular-one/hebrew.css";
+@import "@fontsource/secular-one/latin.css";
+@import "@fontsource/varela-round/hebrew.css";
+@import "@fontsource/varela-round/latin.css";
+
+/* Sticker-book palette: thick ink outlines, flat fills, one hard shadow. */
+@theme {
+  --color-ink: #20264a;
+  --color-ink-soft: #4b5280;
+  --color-paper: #f2f7ff;
+  --color-mist: #dce8f7;
+  --color-teal: #12b5a6;
+  --color-teal-deep: #0b7f75;
+  --color-sun: #ffc93c;
+  --color-violet: #7c5cff;
+  --color-coral: #ff6b6b;
+  --color-leaf: #3fbf6a;
+
+  --font-display: "Secular One", "Varela Round", system-ui, sans-serif;
+  --font-body: "Varela Round", system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 17px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    line-height: 1.55;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-sun);
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Child-mode button: presses down when tapped. */
+  .sticker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.6rem 1.25rem;
+    border: 2.5px solid var(--color-ink);
+    border-radius: 18px;
+    background: var(--color-sun);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    box-shadow: 0 4px 0 var(--color-ink);
+    transition: transform 80ms ease-out, box-shadow 80ms ease-out;
+    cursor: pointer;
+  }
+  .sticker:active:not(:disabled) {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--color-ink);
+  }
+  .sticker:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .sticker-quiet {
+    background: white;
+  }
+
+  .card-ink {
+    border: 2.5px solid var(--color-ink);
+    border-radius: 22px;
+    background: white;
+  }
+
+  /* Parent mode: calm panels, no stickers. */
+  .panel {
+    border: 1.5px solid color-mix(in srgb, var(--color-ink) 15%, transparent);
+    border-radius: 14px;
+    background: white;
+  }
+  .btn-parent {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 2.5rem;
+    padding: 0.4rem 1rem;
+    border-radius: 10px;
+    background: var(--color-ink);
+    color: white;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  .btn-parent:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-parent-quiet {
+    background: transparent;
+    color: var(--color-ink);
+    border: 1.5px solid color-mix(in srgb, var(--color-ink) 25%, transparent);
+  }
+  .field {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1.5px solid color-mix(in srgb, var(--color-ink) 30%, transparent);
+    border-radius: 10px;
+    background: white;
+  }
+}

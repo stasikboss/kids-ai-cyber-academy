@@ -1,0 +1,13 @@
+{
+  "name": "SI: AI and online safety for kids",
+  "short_name": "SI",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f2f7ff",
+  "theme_color": "#12b5a6",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

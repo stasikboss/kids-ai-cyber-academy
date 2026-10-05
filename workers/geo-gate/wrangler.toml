@@ -1,0 +1,27 @@
+name = "kca-geo-gate"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+# Serve on the app's own domain so the browser calls same-origin /api/create-family.
+# Replace example.co.il with the real zone before deploying.
+routes = [
+  { pattern = "app.example.co.il/api/create-family", zone_name = "example.co.il" }
+]
+
+[vars]
+ALLOWED_COUNTRIES = "IL"
+ENVIRONMENT = "production"
+SUPABASE_FUNCTIONS_URL = "https://YOUR-PROJECT-REF.supabase.co/functions/v1"
+
+# Local development: `npx wrangler dev --env dev` next to `supabase start`.
+# The override exists only here, because wrangler dev has no real visitor country.
+[env.dev]
+routes = []
+vars = { ALLOWED_COUNTRIES = "IL", ENVIRONMENT = "development", DEV_COUNTRY_OVERRIDE = "IL", SUPABASE_FUNCTIONS_URL = "http://127.0.0.1:54321/functions/v1" }
+
+# Secrets (set with `npx wrangler secret put <NAME>`):
+#   GATE_SECRET        same value as the create-family Edge Function secret
+#   SUPABASE_ANON_KEY  the project's publishable/anon key
+#
+# Add a Cloudflare rate-limiting rule on this path (for example 10 requests per
+# minute per IP) in the dashboard or with a [[unsafe.bindings]] rate limiter.

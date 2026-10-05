@@ -1,0 +1,265 @@
+import type { Lang, SafetyKind } from './types.ts';
+
+const en = {
+  'signIn.title': 'Parent sign-in',
+  'signIn.lead': 'Children never sign in. A parent signs in once on this device, then each child picks their own profile.',
+  'signIn.google': 'Continue with Google',
+  'signIn.emailLabel': 'Or get a sign-in link by email',
+  'signIn.send': 'Email me a link',
+  'signIn.sent': 'We sent a sign-in link. Open it on this device.',
+  'signIn.error': "That didn't work. Check the address and try again.",
+
+  'setup.family.title': 'Create your family space',
+  'setup.family.lead': 'This app is for families in Israel. Your child’s lessons, progress and settings live in this space.',
+  'setup.family.button': 'Create family space',
+  'setup.family.blocked': 'This app is only available in Israel right now.',
+  'setup.family.error': "We couldn't create your family space. Try again in a minute.",
+
+  'setup.mfa.title': 'Lock the parent area',
+  'setup.mfa.lead': 'Scan this code with an authenticator app. You will enter a 6-digit code whenever you leave child mode or change settings.',
+  'setup.mfa.secret': "Can't scan? Enter this key:",
+  'setup.mfa.code': '6-digit code',
+  'setup.mfa.verify': 'Verify and continue',
+  'setup.mfa.error': "That code didn't match. Use the newest code in your app.",
+
+  'setup.consent.title': 'Your consent',
+  'setup.consent.lead': 'We keep as little as possible: a nickname, a character, an age band and lesson progress. Never your child’s email, birthdate, photo or voice.',
+  'setup.consent.core': 'I agree to the privacy notice and to my child using the lessons.',
+  'setup.consent.tutor': "I agree to my child asking SI, an AI tutor, questions. Questions are checked for personal details before they reach Anthropic's Claude model, and conversations are kept for 30 days for me to review.",
+  'setup.consent.continue': 'Continue',
+
+  'setup.child.title': 'Add your child',
+  'setup.child.nickname': 'Nickname',
+  'setup.child.nicknameHint': 'A nickname, not a full name.',
+  'setup.child.age': 'Age',
+  'setup.child.language': 'Language',
+  'setup.child.avatar': 'Character',
+  'setup.child.pin': 'Picture PIN: tap 4 pictures your child will remember',
+  'setup.child.pinReset': 'Start the PIN again',
+  'setup.child.save': 'Save profile',
+  'setup.child.limit': 'The Free plan has one child profile. The Family plan has up to four.',
+  'setup.child.error': "The profile wasn't saved. Check the fields and try again.",
+
+  'stepUp.title': 'Parent check',
+  'stepUp.lead': 'Enter the 6-digit code from your authenticator app.',
+  'stepUp.verify': 'Unlock',
+  'stepUp.cancel': 'Cancel',
+
+  'parent.title': 'Family dashboard',
+  'parent.childMode': 'Hand over to a child',
+  'parent.addChild': 'Add a child',
+  'parent.lessonsDone': '{done} of {total} lessons done',
+  'parent.tutorToday': 'SI messages today: {used} of {limit}',
+  'parent.alerts': 'Safety alerts',
+  'parent.noAlerts': "No safety alerts. If one happens, you'll see it here straight away.",
+  'parent.attention': 'Needs your attention',
+  'parent.markReviewed': 'Mark as reviewed',
+  'parent.reviewed': 'Reviewed',
+  'parent.transcript': 'SI conversations, last 30 days',
+  'parent.noTranscript': 'No conversations yet.',
+  'parent.settings': 'Settings',
+  'parent.dailyMinutes': 'Daily minutes',
+  'parent.tutorEnabled': 'SI tutor on',
+  'parent.save': 'Save settings',
+  'parent.saved': 'Settings saved',
+  'parent.plan.free': 'Free plan',
+  'parent.plan.family': 'Family plan',
+  'parent.signOut': 'Sign out',
+  'parent.child': 'Child',
+  'parent.tutorLabel': 'SI',
+
+  'alert.pii_blocked': 'Personal details were blocked before sending',
+  'alert.distress': 'Your child may be upset. SI suggested they talk to you.',
+  'alert.unsafe_request': 'Asked about an unsafe topic',
+  'alert.manipulation': "Tried to change SI's rules",
+  'alert.output_blocked': 'An answer was stopped before it was shown',
+  'alert.quota_reached': 'Reached the daily message limit',
+
+  'kids.pick.title': "Who's here?",
+  'kids.pin.title': 'Tap your 4 pictures',
+  'kids.pin.wrong': 'Not quite. {left} tries left.',
+  'kids.pin.locked': 'Too many tries. Ask a parent, or try again later.',
+  'kids.home.hello': 'Hi {name}! What shall we learn today?',
+  'kids.home.askSi': 'Ask SI',
+  'kids.home.exit': 'Parent area',
+  'kids.lesson.soon': 'Coming soon',
+  'kids.lesson.lockedPlan': 'Family plan',
+  'kids.lesson.lockedAge': 'From age 10',
+  'kids.lesson.done': 'Done',
+
+  'lesson.start': "Let's start",
+  'lesson.next': 'Next',
+  'lesson.game.pick': 'Tap a card, then tap where it belongs.',
+  'lesson.game.right': 'Right!',
+  'lesson.game.wrong': 'Not this time.',
+  'lesson.quiz.title': 'Quick check',
+  'lesson.quiz.counter': 'Question {n} of 3',
+  'lesson.finish.title': 'Lesson complete!',
+  'lesson.finish.score': 'You got {score} of 3 right on the first try.',
+  'lesson.finish.badge': 'New badge: {badge}',
+  'lesson.finish.back': 'Back to my map',
+  'lesson.saveError': "Your progress didn't save. Check the connection and try again.",
+  'lesson.retrySave': 'Try saving again',
+
+  'tutor.title': 'Ask SI',
+  'tutor.disclosure': 'SI is a computer program, not a person. Never share your name, address, school or passwords.',
+  'tutor.placeholder': 'Ask about AI or staying safe online',
+  'tutor.send': 'Send',
+  'tutor.left': '{left} messages left today',
+  'tutor.thinking': 'SI is thinking',
+  'tutor.empty': 'Ask me about AI or staying safe online. For example: how can I spot a fake message?',
+  'tutor.error': "SI can't answer right now. Try again in a moment.",
+
+  'badge.track-ai-literacy': 'AI literacy track',
+  'badge.track-cyber-safety': 'Cyber safety track',
+  'badge.track-ai-security': 'AI security track',
+
+  'common.back': 'Back',
+  'common.loading': 'Loading',
+  'common.error': 'Something went wrong. Try again.',
+  'lang.he': 'עברית',
+  'lang.en': 'English',
+} as const;
+
+export type MessageKey = keyof typeof en;
+
+const he: Record<MessageKey, string> = {
+  'signIn.title': 'כניסת הורים',
+  'signIn.lead': 'ילדים לא נרשמים. הורה נכנס פעם אחת במכשיר, ואז כל ילד או ילדה בוחרים את הפרופיל שלהם.',
+  'signIn.google': 'המשך עם Google',
+  'signIn.emailLabel': 'או קבלו קישור כניסה במייל',
+  'signIn.send': 'שלחו לי קישור',
+  'signIn.sent': 'שלחנו קישור כניסה. פתחו אותו במכשיר הזה.',
+  'signIn.error': 'זה לא הצליח. בדקו את הכתובת ונסו שוב.',
+
+  'setup.family.title': 'פתיחת מרחב משפחתי',
+  'setup.family.lead': 'האפליקציה מיועדת למשפחות בישראל. השיעורים, ההתקדמות וההגדרות של הילדים נשמרים במרחב הזה.',
+  'setup.family.button': 'פתיחת מרחב משפחתי',
+  'setup.family.blocked': 'האפליקציה זמינה כרגע רק בישראל.',
+  'setup.family.error': 'לא הצלחנו לפתוח את המרחב המשפחתי. נסו שוב בעוד דקה.',
+
+  'setup.mfa.title': 'נעילת אזור ההורים',
+  'setup.mfa.lead': 'סרקו את הקוד באפליקציית אימות. תתבקשו להזין קוד בן 6 ספרות בכל יציאה ממצב ילדים או שינוי הגדרות.',
+  'setup.mfa.secret': 'לא מצליחים לסרוק? הזינו את המפתח:',
+  'setup.mfa.code': 'קוד בן 6 ספרות',
+  'setup.mfa.verify': 'אימות והמשך',
+  'setup.mfa.error': 'הקוד לא תאם. השתמשו בקוד העדכני ביותר באפליקציה.',
+
+  'setup.consent.title': 'האישור שלכם',
+  'setup.consent.lead': 'אנחנו שומרים מעט ככל האפשר: כינוי, דמות, טווח גילים והתקדמות בשיעורים. אף פעם לא מייל, תאריך לידה, תמונה או קול של הילד או הילדה.',
+  'setup.consent.core': 'אני מאשר/ת את הודעת הפרטיות ואת השימוש של הילד או הילדה בשיעורים.',
+  'setup.consent.tutor': 'אני מאשר/ת שהילד או הילדה ישאלו שאלות את SI, עוזר בינה מלאכותית. השאלות נבדקות לפרטים אישיים לפני שהן מגיעות למודל Claude של Anthropic, והשיחות נשמרות 30 יום כדי שאוכל לעבור עליהן.',
+  'setup.consent.continue': 'המשך',
+
+  'setup.child.title': 'הוספת ילד או ילדה',
+  'setup.child.nickname': 'כינוי',
+  'setup.child.nicknameHint': 'כינוי, לא שם מלא.',
+  'setup.child.age': 'גיל',
+  'setup.child.language': 'שפה',
+  'setup.child.avatar': 'דמות',
+  'setup.child.pin': 'קוד תמונות: בחרו 4 תמונות שהילד או הילדה יזכרו',
+  'setup.child.pinReset': 'להתחיל את הקוד מחדש',
+  'setup.child.save': 'שמירת הפרופיל',
+  'setup.child.limit': 'בתוכנית החינמית יש פרופיל ילד אחד. בתוכנית המשפחתית אפשר עד ארבעה.',
+  'setup.child.error': 'הפרופיל לא נשמר. בדקו את השדות ונסו שוב.',
+
+  'stepUp.title': 'בדיקת הורה',
+  'stepUp.lead': 'הזינו את הקוד בן 6 הספרות מאפליקציית האימות.',
+  'stepUp.verify': 'פתיחה',
+  'stepUp.cancel': 'ביטול',
+
+  'parent.title': 'לוח המשפחה',
+  'parent.childMode': 'מעבר למצב ילדים',
+  'parent.addChild': 'הוספת ילד או ילדה',
+  'parent.lessonsDone': '{done} מתוך {total} שיעורים הושלמו',
+  'parent.tutorToday': 'הודעות ל־SI היום: {used} מתוך {limit}',
+  'parent.alerts': 'התראות בטיחות',
+  'parent.noAlerts': 'אין התראות. אם יקרה משהו, הוא יופיע כאן מיד.',
+  'parent.attention': 'דורש תשומת לב',
+  'parent.markReviewed': 'סימון כנבדק',
+  'parent.reviewed': 'נבדק',
+  'parent.transcript': 'שיחות עם SI, 30 הימים האחרונים',
+  'parent.noTranscript': 'עדיין אין שיחות.',
+  'parent.settings': 'הגדרות',
+  'parent.dailyMinutes': 'דקות ביום',
+  'parent.tutorEnabled': 'העוזר SI פעיל',
+  'parent.save': 'שמירת ההגדרות',
+  'parent.saved': 'ההגדרות נשמרו',
+  'parent.plan.free': 'תוכנית חינמית',
+  'parent.plan.family': 'תוכנית משפחתית',
+  'parent.signOut': 'יציאה',
+  'parent.child': 'ילד/ה',
+  'parent.tutorLabel': 'SI',
+
+  'alert.pii_blocked': 'פרטים אישיים נחסמו לפני שליחה',
+  'alert.distress': 'ייתכן שהילד או הילדה במצוקה. SI הציע לדבר איתכם.',
+  'alert.unsafe_request': 'שאלה על נושא לא בטוח',
+  'alert.manipulation': 'ניסיון לשנות את הכללים של SI',
+  'alert.output_blocked': 'תשובה נעצרה לפני שהוצגה',
+  'alert.quota_reached': 'הגיעו למגבלת ההודעות היומית',
+
+  'kids.pick.title': 'מי פה?',
+  'kids.pin.title': 'הקישו על 4 התמונות שלכם',
+  'kids.pin.wrong': 'לא בדיוק. נשארו {left} ניסיונות.',
+  'kids.pin.locked': 'יותר מדי ניסיונות. אפשר לבקש עזרה מהורה או לנסות שוב מאוחר יותר.',
+  'kids.home.hello': 'שלום {name}! מה לומדים היום?',
+  'kids.home.askSi': 'לשאול את SI',
+  'kids.home.exit': 'אזור ההורים',
+  'kids.lesson.soon': 'בקרוב',
+  'kids.lesson.lockedPlan': 'בתוכנית המשפחתית',
+  'kids.lesson.lockedAge': 'מגיל 10',
+  'kids.lesson.done': 'הושלם',
+
+  'lesson.start': 'מתחילים',
+  'lesson.next': 'הבא',
+  'lesson.game.pick': 'הקישו על כרטיס, ואז על המקום שלו.',
+  'lesson.game.right': 'נכון!',
+  'lesson.game.wrong': 'הפעם לא.',
+  'lesson.quiz.title': 'בדיקה קטנה',
+  'lesson.quiz.counter': 'שאלה {n} מתוך 3',
+  'lesson.finish.title': 'השיעור הושלם!',
+  'lesson.finish.score': '{score} מתוך 3 תשובות נכונות בניסיון הראשון.',
+  'lesson.finish.badge': 'תג חדש: {badge}',
+  'lesson.finish.back': 'חזרה למפה',
+  'lesson.saveError': 'ההתקדמות לא נשמרה. בדקו את החיבור ונסו שוב.',
+  'lesson.retrySave': 'לנסות לשמור שוב',
+
+  'tutor.title': 'לשאול את SI',
+  'tutor.disclosure': 'SI הוא תוכנת מחשב, לא בן אדם. אף פעם לא משתפים שם, כתובת, בית ספר או סיסמאות.',
+  'tutor.placeholder': 'שאלו על בינה מלאכותית או על בטיחות ברשת',
+  'tutor.send': 'שליחה',
+  'tutor.left': 'נשארו {left} הודעות להיום',
+  'tutor.thinking': 'SI חושב',
+  'tutor.empty': 'אפשר לשאול אותי על בינה מלאכותית או על בטיחות ברשת. למשל: איך מזהים הודעה מזויפת?',
+  'tutor.error': 'SI לא יכול לענות כרגע. נסו שוב עוד מעט.',
+
+  'badge.track-ai-literacy': 'מסלול בינה מלאכותית',
+  'badge.track-cyber-safety': 'מסלול בטיחות ברשת',
+  'badge.track-ai-security': 'מסלול אבטחת בינה מלאכותית',
+
+  'common.back': 'חזרה',
+  'common.loading': 'טוען',
+  'common.error': 'משהו השתבש. נסו שוב.',
+  'lang.he': 'עברית',
+  'lang.en': 'English',
+};
+
+const dictionaries: Record<Lang, Record<MessageKey, string>> = { en, he };
+
+export function translate(lang: Lang, key: MessageKey, vars: Record<string, string | number> = {}): string {
+  return dictionaries[lang][key].replace(/\{(\w+)\}/g, (_, name: string) => String(vars[name] ?? ''));
+}
+
+export function alertKey(kind: SafetyKind): MessageKey {
+  return `alert.${kind}` as MessageKey;
+}
+
+export function badgeLabel(lang: Lang, badgeId: string): string {
+  const key = `badge.${badgeId}` as MessageKey;
+  return key in en ? translate(lang, key) : badgeId;
+}
+
+export function applyDocumentLanguage(lang: Lang): void {
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+}

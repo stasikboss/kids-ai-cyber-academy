@@ -1,0 +1,28 @@
+name: Tutor evals (online)
+
+# Run before deploying any change to prompts, classifiers, TUTOR_MODEL or the output
+# filter. Needs the ANTHROPIC_API_KEY repository secret.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - supabase/functions/_shared/prompts.ts
+      - supabase/functions/_shared/output-filter.ts
+      - evals/**
+
+permissions:
+  contents: read
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run evals:online
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
