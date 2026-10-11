@@ -109,7 +109,54 @@ cp apps/web/.env.example apps/web/.env     # local URL and anon key from `supaba
 npm run dev                                # http://localhost:5173, /api proxied to the Worker
 ```
 
-## Deploying
+## Deploying for free
+
+`.github/workflows/deploy.yml` deploys on free tiers after CI passes on `main`, or by
+hand (Actions → Deploy → Run workflow):
+
+- **Supabase (free plan):** database, sign-in and the `create-family` and
+  `delete-family` functions; `tutor-chat` only once an Anthropic key is set.
+- **Cloudflare Pages (free):** the app, and the Israel-only gate as a Pages Function on
+  the same site (`apps/web/functions/api/create-family.ts`), so no domain is needed.
+- **Launch switches** (`public.app_settings`), applied on every run: the Family plan
+  is free for every family (`FREE_FAMILY_PLAN`, default `on`) and SI is on only when
+  `ANTHROPIC_API_KEY` is set (`TUTOR`, default `on`). Billing functions are not
+  deployed and nothing is on sale.
+
+One-time setup:
+
+1. **Supabase:** create a project on the free plan in Frankfurt (eu-central-1) and keep
+   its database password. Create a personal access token (Account → Access Tokens).
+2. **Cloudflare:** note your account ID; create an API token with the account
+   permission *Cloudflare Pages: Edit*.
+3. **Google sign-in** (recommended): in Google Cloud, create an OAuth client of type
+   *Web application* with the authorized redirect URI
+   `https://<project-ref>.supabase.co/auth/v1/callback`. Without Google or your own
+   SMTP, only your Supabase team's addresses can sign in: Supabase's built-in email
+   reaches team members only, 2 messages an hour.
+4. **GitHub** → Settings → Secrets and variables → Actions:
+
+   | Kind | Name | Value |
+   | --- | --- | --- |
+   | Secret | `SUPABASE_ACCESS_TOKEN` | the personal access token |
+   | Secret | `SUPABASE_DB_PASSWORD` | the database password |
+   | Secret | `CLOUDFLARE_API_TOKEN` | the Pages token |
+   | Variable | `SUPABASE_PROJECT_REF` | the 20-letter project ref |
+   | Variable | `CLOUDFLARE_ACCOUNT_ID` | the account ID |
+   | Secret (optional) | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | the OAuth client |
+   | Secret (optional) | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_SENDER_EMAIL`, `SMTP_SENDER_NAME` | email sign-in for everyone |
+   | Secret (later) | `ANTHROPIC_API_KEY` | turns SI on |
+
+5. Run the workflow. Its summary shows the app's address
+   (`https://<project>.pages.dev`) and a smoke test: the app loads, deep links work,
+   the gate refuses a request without a token, and the security headers are present.
+
+Good to know: a free Supabase project pauses after a stretch without use (restore it
+from the dashboard), and Pages Functions count toward Cloudflare's free Workers
+requests. Cloudflare rate-limit rules need a domain on Cloudflare; until then the gate
+relies on create-family needing a signed-in parent and being idempotent.
+
+## Deploying by hand
 
 1. Create a Supabase project in an EU region. Enable TOTP MFA, leaked-password
    protection, and Google sign-in; keep anonymous sign-ins off. Keep the default `amr`

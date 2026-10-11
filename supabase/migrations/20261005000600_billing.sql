@@ -25,8 +25,9 @@ alter table public.plan_limits
   add column monthly_price_agorot int not null default 0
     check (monthly_price_agorot between 0 and 100000);
 
--- PLACEHOLDER until the owner confirms the price (₪29.90 a month).
-update public.plan_limits set monthly_price_agorot = 2990 where plan = 'family';
+-- 0 means the Family plan is not on sale: prepare_checkout refuses and the app says
+-- so. The service launches free. To start selling, set the price, e.g. ₪29.90:
+--   update public.plan_limits set monthly_price_agorot = 2990 where plan = 'family';
 
 alter table public.subscriptions
   -- Monthly amount the standing order was set up with; renewals must match it.

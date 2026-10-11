@@ -8,11 +8,12 @@ import { catalogLessons } from '../lib/content.ts';
 import { alertKey } from '../lib/i18n.ts';
 import { israelToday } from '../lib/screen-time.ts';
 import { useStepUp } from '../lib/step-up.tsx';
-import { rpc, supabase } from '../lib/supabase.ts';
+import { POLICY_VERSION, rpc, supabase } from '../lib/supabase.ts';
 import type { Child, Lang, Progress, SafetyEvent, TutorMessage } from '../lib/types.ts';
 
 export function ParentHome() {
-  const { t, lang, family, children, plan } = useApp();
+  const { t, lang, family, children, plan, billing, tutorAvailable, hasTutorConsent } = useApp();
+  const freeForAll = billing?.free_family_plan === true;
   const navigate = useNavigate();
   const [progress, setProgress] = useState<Progress[]>([]);
   const [alerts, setAlerts] = useState<SafetyEvent[]>([]);
@@ -56,7 +57,7 @@ export function ParentHome() {
         <div>
           <h1 className="text-3xl">{t('parent.title')}</h1>
           <p className="flex flex-wrap gap-x-3 text-ink-soft">
-            <span>{t(plan === 'family' ? 'parent.plan.family' : 'parent.plan.free')}</span>
+            <span>{t(freeForAll ? 'parent.plan.freeFamily' : plan === 'family' ? 'parent.plan.family' : 'parent.plan.free')}</span>
             <Link to="/parent/plan" className="underline decoration-teal underline-offset-4">{t('plan.link')}</Link>
           </p>
         </div>
@@ -72,6 +73,8 @@ export function ParentHome() {
         <button type="button" className="sticker" onClick={() => navigate('/kids')}>{t('parent.childMode')}</button>
         <Link to="/parent/add-child" className="btn-parent btn-parent-quiet self-center">{t('parent.addChild')}</Link>
       </div>
+
+      {tutorAvailable && !hasTutorConsent && <TutorConsentPanel />}
 
       <section aria-labelledby="alerts-title" className="space-y-3">
         <h2 id="alerts-title" className="text-xl">{t('parent.alerts')}</h2>
@@ -126,8 +129,41 @@ export function ParentHome() {
   );
 }
 
+function TutorConsentPanel() {
+  const { t, refresh } = useApp();
+  const [agreed, setAgreed] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(false);
+
+  const turnOn = async (event: FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    setError(false);
+    try {
+      await rpc('grant_consent', { p_scope: 'tutor', p_policy_version: POLICY_VERSION });
+      await refresh();
+    } catch {
+      setError(true);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <form onSubmit={turnOn} aria-labelledby="si-title" className="panel space-y-3 p-5">
+      <h2 id="si-title" className="text-xl">{t('parent.si.title')}</h2>
+      <label className="flex items-start gap-3">
+        <input type="checkbox" className="mt-1 size-5" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+        <span>{t('setup.consent.tutor')}</span>
+      </label>
+      <button type="submit" className="btn-parent" disabled={busy || !agreed}>{t('parent.si.turnOn')}</button>
+      {error && <p role="alert" className="text-sm text-coral">{t('common.error')}</p>}
+    </form>
+  );
+}
+
 function ChildPanel({ child, progress }: { child: Child; progress: Progress[] }) {
-  const { t, isPaused } = useApp();
+  const { t, isPaused, tutorAvailable } = useApp();
   const [quota, setQuota] = useState<{ used: number; limit: number } | null>(null);
   const [minutesToday, setMinutesToday] = useState(0);
   const [showTranscript, setShowTranscript] = useState(false);
@@ -135,10 +171,12 @@ function ChildPanel({ child, progress }: { child: Child; progress: Progress[] })
   const done = progress.filter((p) => p.status === 'completed').length;
 
   useEffect(() => {
-    rpc<{ used: number; limit: number }>('tutor_quota', { p_child: child.id }).then(setQuota).catch(() => setQuota(null));
+    if (tutorAvailable) {
+      rpc<{ used: number; limit: number }>('tutor_quota', { p_child: child.id }).then(setQuota).catch(() => setQuota(null));
+    }
     supabase.from('child_activity').select('seconds').eq('child_id', child.id).eq('day', israelToday()).maybeSingle()
       .then(({ data }) => setMinutesToday(Math.floor(((data?.seconds as number | undefined) ?? 0) / 60)));
-  }, [child.id, progress.length]);
+  }, [child.id, progress.length, tutorAvailable]);
 
   return (
     <section className="panel space-y-4 p-5" aria-label={child.nickname}>
@@ -155,9 +193,11 @@ function ChildPanel({ child, progress }: { child: Child; progress: Progress[] })
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
-        <button type="button" className="btn-parent btn-parent-quiet text-sm" aria-expanded={showTranscript} onClick={() => setShowTranscript((v) => !v)}>
-          {t('parent.transcript')}
-        </button>
+        {tutorAvailable && (
+          <button type="button" className="btn-parent btn-parent-quiet text-sm" aria-expanded={showTranscript} onClick={() => setShowTranscript((v) => !v)}>
+            {t('parent.transcript')}
+          </button>
+        )}
         <button type="button" className="btn-parent btn-parent-quiet text-sm" aria-expanded={showSettings} onClick={() => setShowSettings((v) => !v)}>
           {t('parent.settings')}
         </button>
@@ -204,7 +244,7 @@ function Transcript({ childId }: { childId: string }) {
 }
 
 function ChildSettings({ child }: { child: Child }) {
-  const { t, refresh } = useApp();
+  const { t, refresh, tutorAvailable } = useApp();
   const { withStepUp } = useStepUp();
   const [minutes, setMinutes] = useState(child.daily_minutes);
   const [tutorOn, setTutorOn] = useState(child.tutor_enabled);
@@ -235,10 +275,12 @@ function ChildSettings({ child }: { child: Child }) {
         <span>{t('parent.dailyMinutes')}</span>
         <input type="number" min={10} max={180} step={5} className="field w-28" value={minutes} onChange={(e) => setMinutes(Number(e.target.value))} />
       </label>
-      <label className="flex items-center justify-between gap-4">
-        <span>{t('parent.tutorEnabled')}</span>
-        <input type="checkbox" className="size-5" checked={tutorOn} onChange={(e) => setTutorOn(e.target.checked)} />
-      </label>
+      {tutorAvailable && (
+        <label className="flex items-center justify-between gap-4">
+          <span>{t('parent.tutorEnabled')}</span>
+          <input type="checkbox" className="size-5" checked={tutorOn} onChange={(e) => setTutorOn(e.target.checked)} />
+        </label>
+      )}
       <Choice<Lang>
         label={t('setup.child.language')}
         value={lang}

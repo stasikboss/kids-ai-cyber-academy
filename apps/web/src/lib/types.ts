@@ -65,6 +65,12 @@ export interface Family {
 
 export type BillingPhase = 'free' | 'active' | 'past_due' | 'canceled';
 
+/** Launch switches the deployment sets (public.app_settings). */
+export interface AppSettings {
+  free_family_plan: boolean;
+  tutor_available: boolean;
+}
+
 /** From the billing_status RPC: the plan in force, computed by the database. */
 export interface BillingStatus {
   plan: Plan;
@@ -73,6 +79,7 @@ export interface BillingStatus {
   current_period_end: string | null;
   grace_until: string | null;
   price_agorot: number;
+  free_family_plan: boolean;
   paused_children: string[];
 }
 

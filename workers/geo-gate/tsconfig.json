@@ -10,5 +10,5 @@
     "allowImportingTsExtensions": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "../../supabase/functions/_shared/gate-signature.ts"]
+  "include": ["src/**/*.ts", "../../supabase/functions/_shared/gate-signature.ts", "../../apps/web/functions/**/*.ts"]
 }

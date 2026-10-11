@@ -19,8 +19,8 @@ import { SentenceBuffer } from './sentences.ts';
 export const MAX_MESSAGE_LENGTH = 500;
 
 export type GateReason =
-  | 'not_found' | 'child_inactive' | 'child_paused' | 'tutor_disabled' | 'consent_required' | 'time_up'
-  | 'quota_reached';
+  | 'not_found' | 'tutor_unavailable' | 'child_inactive' | 'child_paused' | 'tutor_disabled'
+  | 'consent_required' | 'time_up' | 'quota_reached';
 
 export interface GateResult {
   allowed: boolean;

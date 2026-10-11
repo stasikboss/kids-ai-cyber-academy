@@ -27,6 +27,7 @@ export type FixedReply =
   | 'consent_required'
   | 'child_inactive'
   | 'child_paused'
+  | 'tutor_unavailable'
   | 'not_found'
   | 'invalid_message'
   | 'unavailable';
@@ -76,6 +77,10 @@ const FIXED_REPLIES: Record<FixedReply, Record<Lang, string>> = {
   consent_required: {
     he: 'לפני שמדברים איתי, הורה צריך לאשר את העוזר בהגדרות.',
     en: 'Before we chat, a parent needs to approve the helper in settings.',
+  },
+  tutor_unavailable: {
+    he: 'SI עוד לא זמין. בינתיים אפשר לשחק בשיעורים!',
+    en: "SI isn't available yet. You can play the lessons in the meantime!",
   },
   child_paused: {
     he: 'הפרופיל הזה מושהה כרגע. אפשר לבקש מההורה לבדוק את התוכנית המשפחתית.',

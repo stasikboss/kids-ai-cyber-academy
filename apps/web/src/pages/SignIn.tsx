@@ -5,6 +5,9 @@ import { LanguageSwitch } from '../components/parent-bits.tsx';
 import { useApp } from '../lib/app-state.tsx';
 import { supabase } from '../lib/supabase.ts';
 
+/** Shown only once the Google provider is set up in Supabase Auth. */
+const GOOGLE_SIGN_IN = import.meta.env.VITE_GOOGLE_SIGNIN === 'on';
+
 export function SignIn() {
   const { t } = useApp();
   const [email, setEmail] = useState('');
@@ -46,9 +49,11 @@ export function SignIn() {
       <h1 className="text-3xl">{t('signIn.title')}</h1>
       <p className="text-ink-soft">{t('signIn.lead')}</p>
 
-      <button type="button" className="btn-parent w-full" onClick={google}>
-        {t('signIn.google')}
-      </button>
+      {GOOGLE_SIGN_IN && (
+        <button type="button" className="btn-parent w-full" onClick={google}>
+          {t('signIn.google')}
+        </button>
+      )}
 
       <form onSubmit={sendLink} className="panel space-y-3 p-4">
         <label htmlFor="email" className="block text-sm text-ink-soft">{t('signIn.emailLabel')}</label>

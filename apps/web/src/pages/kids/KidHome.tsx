@@ -16,7 +16,7 @@ const TRACK_COLOR: Record<Track['id'], string> = {
 
 /** The lesson map: one trail of numbered stones per track. */
 export function KidHome() {
-  const { t, lang, activeChild, plan } = useApp();
+  const { t, lang, activeChild, plan, tutorAvailable } = useApp();
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [badges, setBadges] = useState<Badge[]>([]);
 
@@ -35,7 +35,7 @@ export function KidHome() {
     <KidsShell>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <DragonSays>{t('kids.home.hello', { name: activeChild.nickname })}</DragonSays>
-        <Link to="/kids/tutor" className="sticker">{t('kids.home.askSi')}</Link>
+        {tutorAvailable && <Link to="/kids/tutor" className="sticker">{t('kids.home.askSi')}</Link>}
       </div>
 
       {badges.length > 0 && (

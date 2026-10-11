@@ -147,6 +147,7 @@ const en = {
   'plan.tracks.free': 'AI literacy and cyber safety',
   'plan.tracks.family': 'Also AI security, ages 10 and up',
   'plan.price': '{price} a month, VAT included',
+  'plan.notOnSale': "The Family plan isn't available yet. Everything in the free plan is yours to use, at no cost.",
   'plan.upgrade': 'Upgrade to Family',
   'plan.upgradeHint': "You pay on Grow's secure page. Cancel here at any time; the plan stays until the end of the month you paid for.",
   'plan.active': 'Renews on {date}.',
@@ -171,6 +172,10 @@ const en = {
   'plan.error.billing_unavailable': "Payments aren't available right now.",
   'plan.error.gateway_error': "We couldn't reach Grow, so nothing changed. Try again in a few minutes.",
   'parent.paused': 'Paused on the free plan',
+  'parent.plan.freeFamily': 'Family plan, free for now',
+  'plan.freeForAll': 'For now, every family gets the Family plan free: up to {children} child profiles and every lesson, including AI security for ages 10 and up. There is nothing to pay.',
+  'parent.si.title': 'SI, the AI tutor, is here',
+  'parent.si.turnOn': 'Turn on SI',
   'kids.paused': 'Paused. Ask a parent.',
 } as const;
 
@@ -323,6 +328,7 @@ const he: Record<MessageKey, string> = {
   'plan.tracks.free': 'אוריינות בינה מלאכותית ובטיחות ברשת',
   'plan.tracks.family': 'וגם אבטחת בינה מלאכותית, מגיל 10',
   'plan.price': '{price} לחודש, כולל מע״מ',
+  'plan.notOnSale': 'התוכנית המשפחתית עוד לא זמינה. כל מה שבתוכנית החינמית פתוח לשימוש, בלי תשלום.',
   'plan.upgrade': 'מעבר לתוכנית המשפחתית',
   'plan.upgradeHint': 'התשלום מתבצע בעמוד המאובטח של Grow. אפשר לבטל כאן בכל רגע, והתוכנית נשארת עד סוף החודש ששולם.',
   'plan.active': 'החידוש הבא ב־{date}.',
@@ -347,6 +353,10 @@ const he: Record<MessageKey, string> = {
   'plan.error.billing_unavailable': 'אי אפשר לשלם כרגע.',
   'plan.error.gateway_error': 'לא הצלחנו להגיע ל־Grow, אז שום דבר לא השתנה. נסו שוב בעוד כמה דקות.',
   'parent.paused': 'מושהה בתוכנית החינמית',
+  'parent.plan.freeFamily': 'תוכנית משפחתית, בחינם בינתיים',
+  'plan.freeForAll': 'בינתיים כל משפחה מקבלת את התוכנית המשפחתית בחינם: עד {children} פרופילים של ילדים וכל השיעורים, כולל אבטחת בינה מלאכותית מגיל 10. אין מה לשלם.',
+  'parent.si.title': 'SI, העוזר החכם, כבר כאן',
+  'parent.si.turnOn': 'הפעלת SI',
   'kids.paused': 'מושהה. כדאי לשאול הורה.',
 };
 

@@ -74,7 +74,7 @@ function Routed() {
       <Route path="/kids" element={app.activeChild ? <Navigate to="/kids/home" replace /> : <ParentOnly><KidsPicker /></ParentOnly>} />
       <Route path="/kids/home" element={<ChildOnly><KidHome /></ChildOnly>} />
       <Route path="/kids/lesson/:id" element={<ChildOnly><Lesson /></ChildOnly>} />
-      <Route path="/kids/tutor" element={<ChildOnly><Tutor /></ChildOnly>} />
+      <Route path="/kids/tutor" element={app.tutorAvailable ? <ChildOnly><Tutor /></ChildOnly> : <Navigate to="/kids/home" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

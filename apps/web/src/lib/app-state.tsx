@@ -5,7 +5,7 @@ import {
 import { applyDocumentLanguage, type MessageKey, translate } from './i18n.ts';
 import { useScreenTime } from './screen-time.ts';
 import { supabase } from './supabase.ts';
-import type { BillingStatus, Child, Family, Lang, Plan, PlanLimits } from './types.ts';
+import type { AppSettings, BillingStatus, Child, Family, Lang, Plan, PlanLimits } from './types.ts';
 
 interface AppState {
   ready: boolean;
@@ -18,6 +18,8 @@ interface AppState {
   /** Profiles beyond the plan's child limit are paused (kept, not playable). */
   isPaused: (childId: string) => boolean;
   limits: PlanLimits | null;
+  /** SI is offered at all (a deployment switch, not a per-child setting). */
+  tutorAvailable: boolean;
   hasCoreConsent: boolean;
   hasTutorConsent: boolean;
   activeChild: Child | null;
@@ -61,6 +63,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
   const [kids, setKids] = useState<Child[]>([]);
   const [plan, setPlan] = useState<Plan>('free');
   const [billing, setBilling] = useState<BillingStatus | null>(null);
+  const [settings, setSettings] = useState<AppSettings | null>(null);
   const [limits, setLimits] = useState<PlanLimits | null>(null);
   const [consents, setConsents] = useState<string[]>([]);
   const [activeChildId, setActiveChildId] = useState<string | null>(() => readStorage(sessionStorage, ACTIVE_CHILD_KEY));
@@ -83,7 +86,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
       return;
     }
 
-    const [familyRes, kidsRes, billingRes, consentRes, limitsRes] = await Promise.all([
+    const [familyRes, kidsRes, billingRes, consentRes, limitsRes, settingsRes] = await Promise.all([
       supabase.from('families').select('id, locale').eq('id', guardian.family_id).single(),
       supabase.from('children')
         .select('id, family_id, nickname, avatar_id, age_band, language, daily_minutes, tutor_enabled, pin_locked_until, active, created_at')
@@ -91,6 +94,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
       supabase.rpc('billing_status'),
       supabase.from('consents').select('scope').is('revoked_at', null),
       supabase.from('plan_limits').select('plan, max_children, tutor_daily_messages, ai_security_track'),
+      supabase.from('app_settings').select('free_family_plan, tutor_available').maybeSingle(),
     ]);
 
     // The database decides the plan (grace periods, cancellations); the app only shows it.
@@ -101,6 +105,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
     setKids((kidsRes.data ?? []) as Child[]);
     setPlan(currentPlan);
     setBilling(status);
+    setSettings((settingsRes.data ?? null) as AppSettings | null);
     setLimits(((limitsRes.data ?? []) as PlanLimits[]).find((l) => l.plan === currentPlan) ?? null);
     setConsents((consentRes.data ?? []).map((c) => c.scope as string));
   }, []);
@@ -143,6 +148,8 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
     billing,
     isPaused: (childId) => billing?.paused_children.includes(childId) ?? false,
     limits,
+    // Hidden until the settings load, so SI never flashes up and disappears.
+    tutorAvailable: settings?.tutor_available ?? false,
     hasCoreConsent: consents.includes('core'),
     hasTutorConsent: consents.includes('tutor'),
     activeChild,
@@ -162,7 +169,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
     },
     refresh: () => load(session),
     t: (key, vars) => translate(lang, key, vars),
-  }), [ready, session, family, kids, plan, billing, limits, consents, activeChild, timeUp, lang, load]);
+  }), [ready, session, family, kids, plan, billing, settings, limits, consents, activeChild, timeUp, lang, load]);
 
   return <AppContext.Provider value={value}>{content}</AppContext.Provider>;
 }

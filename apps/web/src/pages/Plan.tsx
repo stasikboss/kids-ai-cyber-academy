@@ -102,6 +102,9 @@ export function Plan() {
   };
 
   const phase = billing?.phase ?? 'free';
+  // Free launch: the Family plan is either free for everyone or not on sale (no price).
+  const freeForAll = billing?.free_family_plan === true;
+  const onSale = !freeForAll && (billing?.price_agorot ?? 0) > 0;
   const price = formatShekels(billing?.price_agorot ?? 0, lang);
   const periodEnd = billing?.current_period_end ? formatDate(billing.current_period_end, lang) : '';
   const free = limits.find((l) => l.plan === 'free');
@@ -126,10 +129,14 @@ export function Plan() {
 
       <section aria-labelledby="status-title" className="panel space-y-4 p-5">
         <h2 id="status-title" className="text-xl">
-          {t(phase === 'free' ? 'parent.plan.free' : 'parent.plan.family')}
+          {t(freeForAll && phase === 'free' ? 'parent.plan.freeFamily' : phase === 'free' ? 'parent.plan.free' : 'parent.plan.family')}
         </h2>
 
-        {phase === 'free' && (
+        {freeForAll && phase === 'free' && (
+          <p>{t('plan.freeForAll', { children: family?.max_children ?? 4 })}</p>
+        )}
+
+        {!freeForAll && phase === 'free' && (
           <>
             <p className="text-ink-soft">{t('plan.freeLead')}</p>
             <table className="w-full table-fixed border-collapse text-start">
@@ -165,13 +172,17 @@ export function Plan() {
                 </tr>
               </tbody>
             </table>
-            <div className="space-y-2">
-              <p className="font-display text-lg">{t('plan.price', { price })}</p>
-              <button type="button" className="btn-parent" onClick={upgrade} disabled={busy || confirm === 'waiting'}>
-                {t('plan.upgrade')}
-              </button>
-              <p className="text-sm text-ink-soft">{t('plan.upgradeHint')}</p>
-            </div>
+            {onSale ? (
+              <div className="space-y-2">
+                <p className="font-display text-lg">{t('plan.price', { price })}</p>
+                <button type="button" className="btn-parent" onClick={upgrade} disabled={busy || confirm === 'waiting'}>
+                  {t('plan.upgrade')}
+                </button>
+                <p className="text-sm text-ink-soft">{t('plan.upgradeHint')}</p>
+              </div>
+            ) : (
+              <p>{t('plan.notOnSale')}</p>
+            )}
           </>
         )}
 
@@ -183,8 +194,12 @@ export function Plan() {
         {phase === 'canceled' && (
           <>
             <p>{t('plan.canceled', { date: periodEnd })}</p>
-            <button type="button" className="btn-parent" onClick={upgrade} disabled={busy}>{t('plan.resubscribe')}</button>
-            <p className="text-sm text-ink-soft">{t('plan.resubscribeHint')}</p>
+            {onSale && (
+              <>
+                <button type="button" className="btn-parent" onClick={upgrade} disabled={busy}>{t('plan.resubscribe')}</button>
+                <p className="text-sm text-ink-soft">{t('plan.resubscribeHint')}</p>
+              </>
+            )}
           </>
         )}
 
@@ -225,28 +240,30 @@ export function Plan() {
         <p className="panel p-4">{t('plan.paused', { names: paused.join(', ') })}</p>
       )}
 
-      <section aria-labelledby="invoices-title" className="space-y-3">
-        <h2 id="invoices-title" className="text-xl">{t('plan.invoices')}</h2>
-        {invoices.length === 0 ? (
-          <p className="panel p-4 text-ink-soft">{t('plan.noInvoices')}</p>
-        ) : (
-          <ul className="panel divide-y divide-ink/10">
-            {invoices.map((invoice) => (
-              <li key={invoice.id} className="flex flex-wrap items-center justify-between gap-2 p-4">
-                <span>
-                  <time dateTime={invoice.issued_at}>{formatDate(invoice.issued_at, lang)}</time>
-                  <span className="ms-3 text-ink-soft">{formatShekels(invoice.amount_agorot, lang)}</span>
-                </span>
-                {invoice.document_url && (
-                  <a className="underline decoration-teal underline-offset-4" href={invoice.document_url} target="_blank" rel="noreferrer noopener">
-                    {t('plan.viewInvoice')}
-                  </a>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      {(onSale || invoices.length > 0) && (
+        <section aria-labelledby="invoices-title" className="space-y-3">
+          <h2 id="invoices-title" className="text-xl">{t('plan.invoices')}</h2>
+          {invoices.length === 0 ? (
+            <p className="panel p-4 text-ink-soft">{t('plan.noInvoices')}</p>
+          ) : (
+            <ul className="panel divide-y divide-ink/10">
+              {invoices.map((invoice) => (
+                <li key={invoice.id} className="flex flex-wrap items-center justify-between gap-2 p-4">
+                  <span>
+                    <time dateTime={invoice.issued_at}>{formatDate(invoice.issued_at, lang)}</time>
+                    <span className="ms-3 text-ink-soft">{formatShekels(invoice.amount_agorot, lang)}</span>
+                  </span>
+                  {invoice.document_url && (
+                    <a className="underline decoration-teal underline-offset-4" href={invoice.document_url} target="_blank" rel="noreferrer noopener">
+                      {t('plan.viewInvoice')}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
     </main>
   );
 }

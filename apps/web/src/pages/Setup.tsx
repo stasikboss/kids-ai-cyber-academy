@@ -162,7 +162,7 @@ function MfaStep({ onDone }: { onDone: () => void }) {
 }
 
 function ConsentStep() {
-  const { t, refresh } = useApp();
+  const { t, refresh, tutorAvailable } = useApp();
   const [core, setCore] = useState(false);
   const [tutor, setTutor] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -191,10 +191,12 @@ function ConsentStep() {
         <input type="checkbox" className="mt-1 size-5" checked={core} onChange={(e) => setCore(e.target.checked)} required />
         <span>{t('setup.consent.core')}</span>
       </label>
-      <label className="panel flex items-start gap-3 p-4">
-        <input type="checkbox" className="mt-1 size-5" checked={tutor} onChange={(e) => setTutor(e.target.checked)} />
-        <span>{t('setup.consent.tutor')}</span>
-      </label>
+      {tutorAvailable && (
+        <label className="panel flex items-start gap-3 p-4">
+          <input type="checkbox" className="mt-1 size-5" checked={tutor} onChange={(e) => setTutor(e.target.checked)} />
+          <span>{t('setup.consent.tutor')}</span>
+        </label>
+      )}
       {error && <p role="alert" className="text-coral">{t('common.error')}</p>}
       <button type="submit" className="btn-parent w-full" disabled={busy || !core}>
         {t('setup.consent.continue')}

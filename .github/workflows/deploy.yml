@@ -1,0 +1,241 @@
+name: Deploy
+
+# Free launch on free tiers:
+#   Supabase          database, auth, Edge Functions (create-family, delete-family; tutor-chat
+#                     only when an Anthropic key is set)
+#   Cloudflare Pages  the web app, plus /api/create-family (the Israel-only gate) as a Pages Function
+# Billing functions are not deployed: nothing is on sale.
+#
+# Launch switches (public.app_settings), set on every run from repository variables:
+#   FREE_FAMILY_PLAN  on (default): every family gets the Family plan's features, free.
+#   TUTOR             on (default) only takes effect with ANTHROPIC_API_KEY set; without
+#                     the key SI stays off and tutor-chat is not deployed.
+#
+# Runs after CI passes on main, or by hand (Actions > Deploy > Run workflow). Until the
+# required settings exist it reports what is missing and stops without failing.
+#
+# Repository secrets: SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD, CLOUDFLARE_API_TOKEN.
+#   Optional: ANTHROPIC_API_KEY (turns SI on), GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET
+#   (Google sign-in), SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SENDER_EMAIL,
+#   SMTP_SENDER_NAME (sign-in emails to everyone; Supabase's built-in email only reaches
+#   your own team).
+# Repository variables: SUPABASE_PROJECT_REF, CLOUDFLARE_ACCOUNT_ID. Optional:
+#   PAGES_PROJECT (default kids-ai-cyber-academy), SITE_URL (a custom domain),
+#   FREE_FAMILY_PLAN, TUTOR.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      PAGES_PROJECT: ${{ vars.PAGES_PROJECT || 'kids-ai-cyber-academy' }}
+      FREE_FAMILY_PLAN: ${{ vars.FREE_FAMILY_PLAN || 'on' }}
+      TUTOR: ${{ vars.TUTOR || 'on' }}
+      WRANGLER: npx --yes wrangler@4.147.0
+    steps:
+      - name: Check settings
+        id: check
+        run: |
+          missing=""
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_REF CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
+            [ -n "${!name}" ] || missing="$missing $name"
+          done
+          if [ -n "$missing" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "### Deploy skipped" >> "$GITHUB_STEP_SUMMARY"
+            echo "Missing repository secrets or variables:$missing. See README, 'Deploying for free'." >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Deploy skipped, missing:$missing"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        if: steps.check.outputs.ready == 'true'
+        run: npm ci
+
+      - uses: supabase/setup-cli@v1
+        if: steps.check.outputs.ready == 'true'
+        with:
+          version: 2.119.0
+
+      - name: Cloudflare Pages project and site URL
+        if: steps.check.outputs.ready == 'true'
+        id: site
+        env:
+          CUSTOM_SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PAGES_PROJECT"
+          if ! curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$api" > /dev/null; then
+            $WRANGLER pages project create "$PAGES_PROJECT" --production-branch main
+          fi
+          # Pages may add a suffix when the name is taken, so ask for the real subdomain.
+          subdomain=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$api" | jq -r '.result.subdomain')
+          site="${CUSTOM_SITE_URL:-https://$subdomain}"
+          echo "url=${site%/}" >> "$GITHUB_OUTPUT"
+          echo "Site: ${site%/}"
+
+      - name: Database (migrations and lesson catalog)
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          supabase db push --include-seed --password "$SUPABASE_DB_PASSWORD" --yes
+
+      - name: Launch switches
+        if: steps.check.outputs.ready == 'true'
+        id: switches
+        run: |
+          free_plan=false
+          if [ "${FREE_FAMILY_PLAN}" = on ]; then free_plan=true; fi
+          si_on=false
+          if [ "${TUTOR}" = on ] && [ -n "${ANTHROPIC_API_KEY}" ]; then si_on=true; fi
+          supabase db query --linked \
+            "update public.app_settings set free_family_plan = $free_plan, tutor_available = $si_on, updated_at = now() where id"
+          echo "tutor=$si_on" >> "$GITHUB_OUTPUT"
+          echo "Family plan free for everyone: $free_plan. SI: $si_on."
+
+      - name: Auth settings
+        if: steps.check.outputs.ready == 'true'
+        env:
+          SITE_URL: ${{ steps.site.outputs.url }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_SENDER_EMAIL: ${{ secrets.SMTP_SENDER_EMAIL }}
+          SMTP_SENDER_NAME: ${{ secrets.SMTP_SENDER_NAME }}
+        run: |
+          body=$(jq -n --arg site "$SITE_URL" '{
+            site_url: $site,
+            uri_allow_list: ($site + "/**"),
+            mfa_totp_enroll_enabled: true,
+            mfa_totp_verify_enabled: true,
+            external_anonymous_users_enabled: false,
+            password_min_length: 12
+          }')
+          if [ -n "$GOOGLE_CLIENT_ID" ] && [ -n "$GOOGLE_CLIENT_SECRET" ]; then
+            body=$(jq --arg id "$GOOGLE_CLIENT_ID" --arg secret "$GOOGLE_CLIENT_SECRET" \
+              '. + {external_google_enabled: true, external_google_client_id: $id, external_google_secret: $secret}' <<< "$body")
+          fi
+          if [ -n "$SMTP_HOST" ]; then
+            body=$(jq --arg host "$SMTP_HOST" --arg port "${SMTP_PORT:-587}" --arg user "$SMTP_USER" \
+              --arg pass "$SMTP_PASS" --arg from "$SMTP_SENDER_EMAIL" --arg name "${SMTP_SENDER_NAME:-SI}" \
+              '. + {smtp_host: $host, smtp_port: $port, smtp_user: $user, smtp_pass: $pass, smtp_admin_email: $from, smtp_sender_name: $name}' <<< "$body")
+          fi
+          curl -fsS -X PATCH "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/config/auth" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+            --data "$body" > /dev/null
+          echo "Auth: site URL $SITE_URL, TOTP on, Google $([ -n "$GOOGLE_CLIENT_ID" ] && echo on || echo off), SMTP $([ -n "$SMTP_HOST" ] && echo on || echo 'off (team addresses only)')"
+
+      - name: Edge Functions
+        if: steps.check.outputs.ready == 'true'
+        id: functions
+        env:
+          SITE_URL: ${{ steps.site.outputs.url }}
+          TUTOR_ON: ${{ steps.switches.outputs.tutor }}
+        run: |
+          # The gate secret is shared by the Pages Function and create-family. A fresh one
+          # each deploy is fine: both sides are updated in this run.
+          gate_secret=$(openssl rand -hex 32)
+          echo "::add-mask::$gate_secret"
+          echo "gate_secret=$gate_secret" >> "$GITHUB_OUTPUT"
+          supabase secrets set --project-ref "$SUPABASE_PROJECT_REF" \
+            GATE_SECRET="$gate_secret" \
+            ALLOWED_ORIGINS="$SITE_URL" \
+            ALLOWED_COUNTRIES=IL
+          functions="create-family delete-family"
+          if [ "$TUTOR_ON" = true ]; then
+            supabase secrets set --project-ref "$SUPABASE_PROJECT_REF" ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY"
+            functions="$functions tutor-chat"
+          fi
+          # shellcheck disable=SC2086
+          supabase functions deploy $functions --project-ref "$SUPABASE_PROJECT_REF" --use-api
+          anon=$(supabase projects api-keys --project-ref "$SUPABASE_PROJECT_REF" -o json \
+            | jq -r '(map(select(.name == "anon"))[0].api_key) // (map(select(.type == "publishable"))[0].api_key) // empty')
+          [ -n "$anon" ] || { echo "::error::Could not read the project's anon/publishable key"; exit 1; }
+          echo "anon_key=$anon" >> "$GITHUB_OUTPUT"
+
+      - name: Build web app
+        if: steps.check.outputs.ready == 'true'
+        env:
+          VITE_SUPABASE_URL: https://${{ vars.SUPABASE_PROJECT_REF }}.supabase.co
+          VITE_SUPABASE_ANON_KEY: ${{ steps.functions.outputs.anon_key }}
+          VITE_GOOGLE_SIGNIN: ${{ secrets.GOOGLE_CLIENT_ID != '' && 'on' || 'off' }}
+        run: |
+          npm run build
+          sed -i "s#__SUPABASE_ORIGIN__#https://$SUPABASE_PROJECT_REF.supabase.co#; s#__SUPABASE_WS_ORIGIN__#wss://$SUPABASE_PROJECT_REF.supabase.co#" apps/web/dist/_headers
+          ! grep -q "__SUPABASE" apps/web/dist/_headers
+
+      - name: Deploy to Cloudflare Pages
+        if: steps.check.outputs.ready == 'true'
+        working-directory: apps/web
+        env:
+          GATE_SECRET: ${{ steps.functions.outputs.gate_secret }}
+          ANON_KEY: ${{ steps.functions.outputs.anon_key }}
+        run: |
+          vars="$RUNNER_TEMP/pages-secrets.json"
+          jq -n --arg gate "$GATE_SECRET" --arg anon "$ANON_KEY" \
+            --arg fn "https://$SUPABASE_PROJECT_REF.supabase.co/functions/v1" \
+            '{GATE_SECRET: $gate, SUPABASE_ANON_KEY: $anon, SUPABASE_FUNCTIONS_URL: $fn, ALLOWED_COUNTRIES: "IL", ENVIRONMENT: "production"}' > "$vars"
+          $WRANGLER pages secret bulk "$vars" --project-name "$PAGES_PROJECT"
+          rm -f "$vars"
+          $WRANGLER pages deploy dist --project-name "$PAGES_PROJECT" --branch main \
+            --commit-hash "${{ github.event.workflow_run.head_sha || github.sha }}"
+
+      - name: Smoke test
+        if: steps.check.outputs.ready == 'true'
+        env:
+          SITE_URL: ${{ steps.site.outputs.url }}
+        run: |
+          sleep 20
+          code() { curl -s -o /dev/null -w "%{http_code}" "$@"; }
+          app=$(code "$SITE_URL/")
+          deep=$(code "$SITE_URL/parent/plan")
+          gate=$(code -X POST "$SITE_URL/api/create-family")
+          csp=$(curl -sI "$SITE_URL/" | grep -ci "content-security-policy" || true)
+          echo "app=$app deep_link=$deep gate_without_token=$gate csp_headers=$csp"
+          {
+            echo "### Deployed"
+            echo "App: $SITE_URL"
+            echo ""
+            echo "| Check | Result |"
+            echo "| --- | --- |"
+            echo "| App loads | $app |"
+            echo "| Deep link (SPA fallback) | $deep |"
+            echo "| /api/create-family without a token (expect 401) | $gate |"
+            echo "| Security headers | $([ "$csp" -ge 1 ] && echo present || echo missing) |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          [ "$app" = 200 ] && [ "$deep" = 200 ] && [ "$gate" = 401 ] && [ "$csp" -ge 1 ]

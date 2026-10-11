@@ -16,7 +16,14 @@ afterAll(async () => {
 
 const PRICE = 2990;
 
+/** The service launches free (price 0); billing tests put the plan on sale first. */
+async function putOnSale(): Promise<void> {
+  await asAdmin(db);
+  await db.query(`update public.plan_limits set monthly_price_agorot = $1 where plan = 'family'`, [PRICE]);
+}
+
 async function startCheckout(ownerId: string): Promise<string> {
+  await putOnSale();
   await asUser(db, ownerId, { totpSecondsAgo: 20 });
   const { rows } = await db.query(`select public.prepare_checkout() as c`);
   return rows[0].c.checkout_id as string;
@@ -105,10 +112,21 @@ describe('entitlement', () => {
 });
 
 describe('checkout', () => {
+  it('is closed while the Family plan has no price (the free launch)', async () => {
+    await inTransaction(db, async () => {
+      const a = await createFamily(db);
+      await asUser(db, a.ownerId, { totpSecondsAgo: 20 });
+      expect(await expectFailure(db, `select public.prepare_checkout()`)).toBe('billing_unavailable');
+      const status = (await db.query(`select public.billing_status() as s`)).rows[0].s;
+      expect(status).toMatchObject({ plan: 'free', phase: 'free', price_agorot: 0 });
+    });
+  });
+
   it('needs a guardian with a fresh TOTP step-up and sets the amount itself', async () => {
     await inTransaction(db, async () => {
       const a = await createFamily(db);
       const stranger = await createUser(db);
+      await putOnSale();
 
       await asUser(db, a.ownerId);
       expect(await expectFailure(db, `select public.prepare_checkout()`)).toBe('step_up_required');
@@ -368,6 +386,65 @@ describe('cancellation', () => {
       expect(exported.subscription).not.toHaveProperty('gateway_ref');
       expect(exported.subscription).not.toHaveProperty('gateway_recurring_id');
       expect(exported.payments).toEqual([expect.objectContaining({ kind: 'initial', outcome: 'applied', amount_agorot: PRICE })]);
+    });
+  });
+});
+
+describe('free mode', () => {
+  async function setSettings(sql: string) {
+    await asAdmin(db);
+    await db.query(`update public.app_settings set ${sql}`);
+  }
+
+  it('gives every family the Family plan and asks nobody to pay', async () => {
+    await inTransaction(db, async () => {
+      const a = await createFamily(db);
+      await setSettings('free_family_plan = true');
+
+      expect(await subscription(a.familyId)).toMatchObject({ plan: 'free', effective: 'family', phase: 'free' });
+
+      await asUser(db, a.ownerId, { totpSecondsAgo: 20 });
+      expect(await expectFailure(db, `select public.prepare_checkout()`)).toBe('billing_unavailable');
+      const status = (await db.query(`select public.billing_status() as s`)).rows[0].s;
+      expect(status).toMatchObject({ plan: 'family', phase: 'free', renews: false, free_family_plan: true });
+
+      // Family limits apply: a second profile, and the AI-security track for 10-12.
+      const older = (await db.query(
+        `select public.add_child('Ari', 'dragon-violet', '10-12', 'en', '5678') as id`)).rows[0].id as string;
+      await asUser(db, a.ownerId);
+      await db.query(`select public.record_lesson_start($1, 'aisec-01')`, [older]);
+
+      // Switching it off later pauses, never deletes, the extra profile.
+      await setSettings('free_family_plan = false');
+      await asAdmin(db);
+      await db.query(`update public.children set created_at = now() + interval '1 second' where id = $1`, [older]);
+      await asUser(db, a.ownerId);
+      expect((await db.query(`select public.billing_status() as s`)).rows[0].s.paused_children).toEqual([older]);
+    });
+  });
+
+  it('switches SI off for everyone, before any other check', async () => {
+    await inTransaction(db, async () => {
+      const a = await createFamily(db);
+      await setSettings('tutor_available = false');
+      await asServiceRole(db);
+      const gate = await db.query(`select public.svc_tutor_gate($1, $2) as g`, [a.ownerId, a.childId]);
+      expect(gate.rows[0].g).toMatchObject({ allowed: false, reason: 'tutor_unavailable' });
+
+      await setSettings('tutor_available = true');
+      await asServiceRole(db);
+      const open = await db.query(`select public.svc_tutor_gate($1, $2) as g`, [a.ownerId, a.childId]);
+      expect(open.rows[0].g).toMatchObject({ allowed: true });
+    });
+  });
+
+  it('lets parents read the switches but never change them', async () => {
+    await inTransaction(db, async () => {
+      const a = await createFamily(db);
+      await asUser(db, a.ownerId);
+      const { rows } = await db.query(`select free_family_plan, tutor_available from public.app_settings`);
+      expect(rows).toEqual([{ free_family_plan: false, tutor_available: true }]);
+      expect(await expectFailure(db, `update public.app_settings set free_family_plan = true`)).toMatch(/permission denied/);
     });
   });
 });
