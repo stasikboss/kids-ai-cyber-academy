@@ -141,8 +141,7 @@ One-time setup:
    | Secret | `SUPABASE_ACCESS_TOKEN` | the personal access token |
    | Secret | `SUPABASE_DB_PASSWORD` | the database password |
    | Secret | `CLOUDFLARE_API_TOKEN` | the Pages token |
-   | Variable | `SUPABASE_PROJECT_REF` | the 20-letter project ref |
-   | Variable | `CLOUDFLARE_ACCOUNT_ID` | the account ID |
+   | Variable (optional) | `SUPABASE_PROJECT_REF`, `CLOUDFLARE_ACCOUNT_ID` | only to deploy somewhere else; this deployment's IDs are defaults in the workflow |
    | Secret (optional) | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | the OAuth client |
    | Secret (optional) | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_SENDER_EMAIL`, `SMTP_SENDER_NAME` | email sign-in for everyone |
    | Secret (later) | `ANTHROPIC_API_KEY` | turns SI on |
